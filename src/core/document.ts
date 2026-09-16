@@ -159,7 +159,7 @@ const parseTags = (value: unknown): string[] | undefined => {
         return undefined;
     if (!value.every((tag) => typeof tag === 'string'))
         return undefined;
-    const tags = normalizeTags(value as string[]);
+    const tags = normalizeTags(value);
     return tags.length > 0 ? tags : undefined;
 };
 const parseShape = (value: unknown): DocumentShape | null => {
@@ -304,8 +304,8 @@ const parseShape = (value: unknown): DocumentShape | null => {
         shape.labelRotation = value.labelRotation;
     if (value.routeStyle !== undefined && routeStyles.has(value.routeStyle as RouteStyle))
         shape.routeStyle = value.routeStyle as RouteStyle;
-    if (Array.isArray(value.routePoints) && value.routePoints.length <= 100 && value.routePoints.every((point) => isRecord(point) && isFiniteNumber(point.x) && isFiniteNumber(point.y))) {
-        shape.routePoints = value.routePoints.map((point) => ({ x: point.x as number, y: point.y as number }));
+    if (Array.isArray(value.routePoints) && value.routePoints.length <= 100 && value.routePoints.every((point: unknown): point is Point => isRecord(point) && isFiniteNumber(point.x) && isFiniteNumber(point.y))) {
+        shape.routePoints = value.routePoints.map((point) => ({ x: point.x, y: point.y }));
     }
     if (value.routeOffset !== undefined && isFiniteNumber(value.routeOffset))
         shape.routeOffset = value.routeOffset;

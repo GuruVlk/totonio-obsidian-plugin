@@ -1,6 +1,17 @@
-# Totonio Presentation 0.1.0
+# Totonio Presentation 0.1.1
 
 Architecture and sequence diagrams alongside your notes. Create in Totonio, present in Obsidian.
+
+## Review Improvements
+
+- Fixed parser type assertions and made route-point validation explicitly type-safe.
+- Replaced native HTML creation calls with Obsidian helpers, retaining offline SVG rendering.
+- Added searchable read-only presentation-guide definitions for Obsidian 1.13+, with the existing information page retained on 1.12.7.
+- Reworded configuration-folder guidance to support custom vault configuration locations.
+- Replaced CSS `!important` overrides with scoped selectors.
+- Removed Node file-system detection from the Playwright configuration; browser selection is explicit.
+- Added official Obsidian ESLint rules to local and CI verification.
+- Releases are now built, tested, and attested in GitHub Actions. Only the three supported installation assets are attached; license notices remain in the bundle.
 
 ## Included
 

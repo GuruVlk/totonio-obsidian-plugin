@@ -52,7 +52,6 @@ Create `.obsidian/plugins/totonio-presentation/` inside a test vault and place t
 - `main.js`
 - `manifest.json`
 - `styles.css`
-- `THIRD_PARTY_NOTICES.md` (retain when redistributing)
 
 Reload Obsidian and enable **Totonio Presentation** in Settings > Community plugins. Click a `.totonio` file in the vault's file explorer. The file opens in the native Totonio Presentation tab; there is no web server, iframe, or connection to the Totonio web app.
 
@@ -110,7 +109,9 @@ npx playwright install chromium
 npm run test:e2e
 ```
 
-On macOS the browser suite automatically uses installed Google Chrome in a temporary test profile if available. `PLAYWRIGHT_CHANNEL=chrome npm run test:e2e` selects Chrome explicitly on other platforms. No existing browser profile is used. The harness owns port 4189 only while its tests run and refuses to reuse an existing server.
+The browser suite uses Playwright's installed Chromium by default. To use installed Google Chrome instead, run `PLAYWRIGHT_CHANNEL=chrome npm run test:e2e`, including on macOS. Tests use a temporary profile, never an existing browser profile. The harness owns port 4189 only while its tests run and refuses to reuse an existing server.
+
+`npm run lint` runs strict TypeScript checks and the official Obsidian ESLint recommended rules with zero warnings allowed. Tagged releases are built and tested by GitHub Actions, which attaches provenance attestations to the three installation files. See [release verification](docs/RELEASING.md).
 
 Unit/integration tests cover strict v3 loading, legacy rejection, hierarchy, connector geometry, image assets, saved viewport, frame ordering/fitting/navigation, Obsidian registration, embed opening, invalid files, asynchronous teardown, and a vault stub that throws on every write. Playwright covers desktop/mobile screenshots and pixel checks, visible arrowheads, decoded assets, frame controls, keyboard scope, pan/zoom, resize, static embeds, and offline SVG isolation.
 

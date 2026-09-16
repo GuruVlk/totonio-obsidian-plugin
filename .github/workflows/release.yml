@@ -1,0 +1,43 @@
+name: Release plugin
+on:
+  push:
+    tags: ['*.*.*']
+permissions:
+  contents: read
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      id-token: write
+      attestations: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Verify release tag
+        run: node --input-type=module -e "import fs from 'node:fs'; import assert from 'node:assert/strict'; const manifest=JSON.parse(fs.readFileSync('manifest.json','utf8')); assert.match(process.env.GITHUB_REF_NAME,/^\d+\.\d+\.\d+$/); assert.equal(process.env.GITHUB_REF_NAME,manifest.version);"
+      - run: npm ci
+      - run: npm run lint
+      - run: npm test
+      - run: npm run build
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:e2e
+      - name: Attest installation files
+        uses: actions/attest-build-provenance@43d14bc2b83dec42d39ecae14e916627a18bb661
+        with:
+          subject-path: |
+            main.js
+            manifest.json
+            styles.css
+      - name: Publish release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "$GITHUB_REF_NAME" main.js manifest.json styles.css --verify-tag --title "Totonio Presentation $GITHUB_REF_NAME" --notes-file docs/RELEASE_NOTES.md --latest

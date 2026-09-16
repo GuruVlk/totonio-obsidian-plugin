@@ -8,11 +8,10 @@ type Icon = typeof ChevronLeft;
 
 export function showError(container: HTMLElement, error: unknown): void {
   container.replaceChildren();
-  const message = container.ownerDocument.createElement('div');
+  const message = container.createDiv();
   message.className = 'totonio-error';
   message.setAttribute('role', 'alert');
   message.textContent = error instanceof Error ? error.message : 'Unable to open this Totonio file.';
-  container.appendChild(message);
 }
 
 export class Viewer {
@@ -32,14 +31,13 @@ export class Viewer {
 
   constructor(container: HTMLElement, document: CanvasState, private readonly options: Options = {}) {
     const dom = container.ownerDocument;
-    this.root = dom.createElement('div');
+    this.root = container.createDiv();
     this.root.className = `totonio-viewer${options.preview ? ' totonio-preview' : ''}`;
     this.root.tabIndex = 0;
     this.root.setAttribute('role', options.preview ? 'button' : 'region');
     this.root.setAttribute('aria-label', options.preview ? `Open ${options.title ?? 'Totonio presentation'}` : options.title ?? 'Totonio presentation');
-    this.surface = dom.createElement('div');
+    this.surface = this.root.createDiv();
     this.surface.className = 'totonio-surface';
-    this.root.appendChild(this.surface);
     container.replaceChildren(this.root);
     this.presentation = new Presentation(document, this.size());
     this.svg = svgElement(this.surface, 'svg', { class: 'totonio-svg', width: '100%', height: '100%',
@@ -77,13 +75,13 @@ export class Viewer {
   }
 
   private createToolbar(): void {
-    const toolbar = this.root.ownerDocument.createElement('div');
+    const toolbar = this.root.createDiv();
     toolbar.className = 'totonio-toolbar';
     toolbar.setAttribute('role', 'toolbar');
     toolbar.setAttribute('aria-label', 'Presentation controls');
     this.root.prepend(toolbar);
     const button = (label: string, icon: Icon, action: () => void): HTMLButtonElement => {
-      const element = this.root.ownerDocument.createElement('button');
+      const element = toolbar.createEl('button');
       element.type = 'button';
       element.className = 'clickable-icon totonio-control';
       element.setAttribute('aria-label', label);
@@ -93,14 +91,12 @@ export class Viewer {
         'stroke-linejoin': 'round', 'aria-hidden': 'true' });
       for (const [tag, attributes] of icon) svgElement(image, tag as keyof SVGElementTagNameMap, attributes);
       this.listen(element, 'click', () => { action(); this.update(); this.root.focus({ preventScroll: true }); });
-      toolbar.appendChild(element);
       return element;
     };
     const previous = button('Previous frame', ChevronLeft, () => this.presentation.step(-1));
-    this.status = this.root.ownerDocument.createElement('span');
+    this.status = toolbar.createSpan();
     this.status.className = 'totonio-frame-status';
     this.status.setAttribute('aria-live', 'polite');
-    toolbar.appendChild(this.status);
     const next = button('Next frame', ChevronRight, () => this.presentation.step(1));
     const exit = button('Free view', Minimize, () => this.presentation.escape());
     const play = button('Start frames', Play, () => this.presentation.step(1));

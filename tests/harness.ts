@@ -1,4 +1,5 @@
 import '../styles.css';
+import './dom-helpers';
 import { loadDocument } from '../src/document';
 import { Viewer, showError } from '../src/viewer';
 import { sampleDocument, sampleJson } from './fixture';

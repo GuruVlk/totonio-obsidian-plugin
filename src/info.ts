@@ -8,7 +8,7 @@ export const SUPPORT_URL = 'https://www.buymeacoffee.com/vladimirplk';
 export type InfoHeading = (container: HTMLElement, title: string) => void;
 
 const previewHeading: InfoHeading = (container, title) => {
-  const heading = container.ownerDocument.createElement('div');
+  const heading = container.createDiv();
   heading.className = 'setting-item setting-item-heading';
   heading.setAttribute('role', 'heading');
   heading.setAttribute('aria-level', '2');
@@ -18,12 +18,10 @@ const previewHeading: InfoHeading = (container, title) => {
 
 export function renderInfo(container: HTMLElement, version: string, heading: InfoHeading = previewHeading): void {
   container.replaceChildren();
-  const dom = container.ownerDocument;
-  const element = <Tag extends keyof HTMLElementTagNameMap>(parent: Element, tag: Tag, text?: string, className?: string): HTMLElementTagNameMap[Tag] => {
-    const node = dom.createElement(tag);
+  const element = <Tag extends keyof HTMLElementTagNameMap>(parent: HTMLElement, tag: Tag, text?: string, className?: string): HTMLElementTagNameMap[Tag] => {
+    const node = parent.createEl(tag);
     if (text) node.textContent = text;
     if (className) node.className = className;
-    parent.appendChild(node);
     return node;
   };
   const page = element(container, 'article', undefined, 'totonio-info');
@@ -68,7 +66,7 @@ export function renderInfo(container: HTMLElement, version: string, heading: Inf
 
   heading(page, 'Getting started');
   const steps = element(page, 'ol');
-  element(steps, 'li', 'Place a version 3 .totonio file anywhere in your vault, outside .obsidian, then click it in the file explorer.');
+  element(steps, 'li', 'Place a version 3 .totonio file anywhere in your vault, outside its configuration folder, then click it in the file explorer.');
   element(steps, 'li', 'Use the previous/next buttons, Left/Right, or Page Up/Page Down to navigate frames. Focus the viewer first.');
   element(steps, 'li', 'Press Escape for free view. Drag to pan and scroll or pinch to zoom. Reset view restores the saved viewport; Fit content shows the whole diagram.');
   element(page, 'p', 'Diagrams without frames open at their saved viewport. Resizing the pane refits the active frame.');

@@ -1,8 +1,6 @@
 import { defineConfig, devices } from '@playwright/test';
-import { existsSync } from 'node:fs';
 
-const channel = process.env.PLAYWRIGHT_CHANNEL ??
-  (process.platform === 'darwin' && existsSync('/Applications/Google Chrome.app') ? 'chrome' : undefined);
+const channel = process.env.PLAYWRIGHT_CHANNEL || undefined;
 
 export default defineConfig({
   testDir: './tests/e2e', fullyParallel: true, workers: 2,

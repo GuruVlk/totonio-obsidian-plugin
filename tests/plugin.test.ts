@@ -92,6 +92,15 @@ describe('read-only Obsidian integration', () => {
     expect(tab.containerEl.querySelectorAll('.setting-item-heading')).toHaveLength(6);
     expect(tab.containerEl.querySelector('h1, h2, h3')).toBeNull();
     expect(tab.containerEl.textContent).toContain('By GuruVlk');
+    const definitions = tab.getSettingDefinitions();
+    expect(definitions).toHaveLength(1);
+    const definition = definitions[0];
+    expect(definition).toMatchObject({ name: 'Presentation guide', aliases: expect.arrayContaining(['frames', 'embed']) });
+    const settingEl = document.createElement('div');
+    if ('render' in definition && definition.render) definition.render({ settingEl } as never, {} as never);
+    expect(settingEl.querySelector('.totonio-info')).not.toBeNull();
+    expect(settingEl.textContent).not.toContain('.obsidian');
+    expect(settingEl.querySelector('input, select, textarea')).toBeNull();
   });
   it('registers only .totonio and a native file view and code block processor', () => {
     const { app } = createHost();

@@ -26,6 +26,9 @@ host.readFile = (path) => {
     text = text.replace('value.version >= ASSET_DOCUMENT_VERSION ? value.assets : []', 'value.assets');
     text = text.replace(/  if \(value.version < ASSET_DOCUMENT_VERSION[^\n]+\n/, '');
     text = text.replace('value.version < NORMALISED_BORDER_VERSION ? normalisedBorderPositions(parsedShapes) : parsedShapes', 'parsedShapes');
+    text = text.replace('normalizeTags(value as string[])', 'normalizeTags(value)');
+    text = text.replace('value.routePoints.every((point) =>', 'value.routePoints.every((point: unknown): point is Point =>');
+    text = text.replace('({ x: point.x as number, y: point.y as number })', '({ x: point.x, y: point.y })');
   }
   return text;
 };
