@@ -1,6 +1,42 @@
-# totonio-obsidian
+# Totonio Presentation for Obsidian
 
-An offline, read-only Totonio Presentation viewer in a native Obsidian workspace tab. Supports only `.totonio` documents with `format: "totonio"` and `version: 3`.
+**Architecture and sequence diagrams alongside your notes. Create in Totonio, present in Obsidian.**
+
+Create in [Totonio's web app](https://totonio.pages.dev/), save a `.totonio` file in your vault, then inspect it, step through Presentation Frames, or embed a preview in Markdown. This plugin is a native, offline, read-only viewer, not an editor.
+
+![Read-only Totonio plugin diagram viewer](src/assets/diagram-view.png)
+
+## Why Totonio Here?
+
+- **Explain a system one frame at a time.** Keep the whole diagram in one file and use ordered Presentation Frames for architecture walkthroughs, process reviews, and meeting notes.
+- **Put the diagram beside the explanation.** Embed a compact preview in a design note or open the full diagram in an Obsidian workspace tab.
+- **Inspect structure and detail.** View nested containers, routed connectors, labels, and embedded images without turning on an editor.
+- **Keep the source unchanged.** Explore offline with pan and zoom. Opening, presenting, and closing a diagram never writes to its vault file.
+
+## Create in the Web App, View in Obsidian
+
+The [Totonio web app](https://totonio.pages.dev/) is the authoring companion. These are **web-app features**, not editing tools provided by this plugin:
+
+| Workflow | In the Totonio web app | In this Obsidian plugin |
+| --- | --- | --- |
+| Present a diagram | Create and order Presentation Frames; present frames or explore the canvas. | Play saved frames with previous/next navigation, fit-to-pane, and outside-frame dimming; explore in free view. |
+| Organize with tags | Tag shapes and connectors, search tags, and filter/highlight parts of a diagram. | Open the saved diagram without changing its tags. No tag-filter UI or integration with Obsidian note tags. |
+| PlantUML and Mermaid sequences | Use **Import > Sequence from script** to turn supported sequence syntax into editable Totonio objects. | View the generated objects after saving as a version 3 `.totonio` file. No direct `.puml` or Mermaid code-block import. |
+| Edit and arrange | Create shapes, nested containers, connectors, labels, and embedded images. | Inspect their saved appearance and hierarchy in a read-only view. |
+
+**Sequence syntax is a supported subset, not full PlantUML or Mermaid compatibility.** The generator reads participant declarations/aliases, messages, replies, self-messages, and notes. Grouping such as `alt`/`loop`, activation, and other unsupported constructs are not rendered by the generator. This is not a general importer for every diagram type in either language.
+
+For example: generate an API sequence from a script in Totonio, tag its objects by subsystem, create frames for a walkthrough, then save the v3 file in your vault and embed it in your architecture note. Web-app tag-filter state is not saved or reproduced by the plugin.
+
+**The handoff is manual today.** Open in Totonio launches the website only; select the vault file there yourself. Save edits back to that file, or replace it with the browser's downloaded copy. There is no automatic file transfer or save-back bridge.
+
+## Plugin Information
+
+Open **Settings > Totonio Presentation** (or the plugin's gear icon) for the information page, getting-started guide, Markdown embed syntax, and compatibility notes. The welcome mascot and a screenshot of the plugin's actual diagram viewer are bundled locally; no extra installation files or network connection are needed.
+
+![Totonio tanuki painting a diagram](src/assets/tanuki.webp)
+
+**Support Totonio:** [Buy me a coffee](https://www.buymeacoffee.com/vladimirplk). The information page includes a coffee-support bar; it opens the external site only when clicked.
 
 ## Build and Install
 
@@ -24,6 +60,7 @@ The repository directory can have any name. The plugin installation directory an
 
 ## Viewing
 
+- **Open in Totonio** (external-link icon) opens `https://totonio.pages.dev/` in your browser. Choose the file in the web app yourself; the button does not send file contents or a vault path.
 - Documents with frames start at the first frame in ascending `frameOrder`. Equal orders preserve document order. Previous/next buttons and Left/Right or Page Up/Page Down step through frames, wrapping at either end.
 - The active frame is fitted to the actual pane with 32px padding; content outside it is dimmed. Pane resizing refits that frame.
 - Escape or the Free view button stops playback and restores the parked free-view viewport. Start frames begins playback again.

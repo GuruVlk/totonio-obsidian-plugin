@@ -2,6 +2,7 @@ import '../styles.css';
 import { loadDocument } from '../src/document';
 import { Viewer, showError } from '../src/viewer';
 import { sampleDocument, sampleJson } from './fixture';
+import { renderInfo } from '../src/info';
 
 const pane = document.getElementById('pane')!;
 let viewer: Viewer | undefined;
@@ -18,6 +19,12 @@ function mount(json = sampleJson, preview = false): void {
 }
 
 const api = {
+  info: () => {
+    viewer?.dispose();
+    viewer = undefined;
+    pane.style.cssText = 'height:100%;overflow:auto;padding:24px';
+    renderInfo(pane, '0.1.0');
+  },
   mount, sampleJson, sampleDocument,
   get view() { return viewer?.presentation.view; },
   get frameIndex() { return viewer?.presentation.frameIndex; },

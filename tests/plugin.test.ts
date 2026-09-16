@@ -27,6 +27,9 @@ const host = vi.hoisted(() => {
 vi.mock('obsidian', () => ({
   TFile: host.TFile,
   normalizePath: (path: string) => path.replace(/\/+/g, '/'),
+  PluginSettingTab: class {
+    containerEl = document.createElement('div');
+  },
   FileView: class extends host.Component {
     app: App;
     contentEl = document.createElement('div');
@@ -37,6 +40,7 @@ vi.mock('obsidian', () => ({
     constructor(public containerEl: HTMLElement) { super(); }
   },
   Plugin: class extends host.Component {
+    addSettingTab = vi.fn();
     registerView = vi.fn();
     registerExtensions = vi.fn();
     registerMarkdownCodeBlockProcessor = vi.fn();
@@ -74,6 +78,7 @@ describe('read-only Obsidian integration', () => {
     const { app } = createHost();
     const plugin = new TotonioPlugin(app, {} as never);
     plugin.onload();
+    expect(plugin.addSettingTab).toHaveBeenCalledOnce();
     expect(plugin.registerView).toHaveBeenCalledWith(VIEW_TYPE, expect.any(Function));
     expect(plugin.registerExtensions).toHaveBeenCalledWith(['totonio'], VIEW_TYPE);
     expect(plugin.registerMarkdownCodeBlockProcessor).toHaveBeenCalledWith('totonio', expect.any(Function));

@@ -3,7 +3,7 @@
   "name": "Totonio Presentation",
   "version": "0.1.0",
   "minAppVersion": "1.5.0",
-  "description": "Open local Totonio diagrams as offline, read-only presentations.",
-  "author": "Totonio",
+  "description": "View architecture, flowchart, and sequence diagrams from local Totonio files. Navigate presentation frames and embed read-only previews in notes, offline.",
+  "author": "GuruVlk",
   "isDesktopOnly": false
 }

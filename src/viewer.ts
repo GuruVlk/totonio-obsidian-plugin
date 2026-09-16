@@ -1,4 +1,4 @@
-import { ChevronLeft, ChevronRight, Maximize, Minimize, Play, RotateCcw } from 'lucide';
+import { ChevronLeft, ChevronRight, ExternalLink, Maximize, Minimize, Play, RotateCcw } from 'lucide';
 import { Presentation } from './presentation';
 import { renderDiagram, svgElement } from './render';
 import type { CanvasState, Point } from './core/types';
@@ -106,6 +106,10 @@ export class Viewer {
     const play = button('Start frames', Play, () => this.presentation.step(1));
     const reset = button('Reset view', RotateCcw, () => this.presentation.reset());
     const fit = button('Fit content', Maximize, () => this.presentation.fitContent());
+    const website = button('Open in Totonio', ExternalLink, () => {
+      this.root.ownerDocument.defaultView?.open('https://totonio.pages.dev/', '_blank', 'noopener,noreferrer');
+    });
+    website.title = 'Open Totonio in your browser (select the file there)';
     this.frameControls.push(previous, next, exit);
     this.freeControls.push(play, reset, fit);
     if (!this.presentation.frames.length) play.remove();

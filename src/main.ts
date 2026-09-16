@@ -2,6 +2,7 @@ import { FileView, MarkdownRenderChild, Plugin, TFile, normalizePath } from 'obs
 import type { App, WorkspaceLeaf } from 'obsidian';
 import { loadDocument } from './document';
 import { Viewer, showError } from './viewer';
+import { TotonioInfoTab } from './settings';
 
 export const VIEW_TYPE = 'totonio-presentation';
 
@@ -107,6 +108,7 @@ export default class TotonioPlugin extends Plugin {
   private readonly embeds = new Set<TotonioEmbed>();
 
   onload(): void {
+    this.addSettingTab(new TotonioInfoTab(this.app, this));
     this.registerView(VIEW_TYPE, (leaf) => new TotonioView(leaf));
     this.registerExtensions(['totonio'], VIEW_TYPE);
     this.registerMarkdownCodeBlockProcessor('totonio', (source, element, context) => {

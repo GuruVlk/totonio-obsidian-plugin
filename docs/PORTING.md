@@ -58,6 +58,12 @@ Fit content follows the visual-bounds principle in `canvas/fitSelection.ts`: exc
 - Theme-native controls surround the original light diagram palette. Only installed local fonts are used, so glyph metrics can differ by platform just as with Totonio's browser fallbacks.
 - Markdown previews are static and independently sized. Frameless previews fit content; full tabs retain the saved viewport. Each preview owns and disposes its own resize observer and handlers.
 
+## Information Page Artwork
+
+The plugin settings information page retains the original `src/assets/tanuki.webp` from Totonio's welcome dialog as branding. Its only feature illustration is `src/assets/diagram-view.png`, captured from the production plugin viewer in the local browser test harness on 2026-09-16. It shows the sample diagram and the actual read-only presentation controls, not web-app editing tools. Regenerate it by running the desktop Playwright test named "renders a nonblank presentation" and copying its `presentation.png` output to that asset path. This is a viewer capture, not a screenshot of the Obsidian application chrome. The older hint-card snapshots and their optional port script are not used by the information page. esbuild bundles the local artwork as data URLs, so installation still requires only the original three plugin files.
+
+The support destination is reused from `src/components/SupportLink.tsx`: `https://www.buymeacoffee.com/vladimirplk`. It is an ordinary opt-in external link, not an embedded third-party widget. No settings or vault files are written by the information page.
+
 ## Read-only Boundary
 
 The plugin extends `FileView`, not `TextFileView`. Its only document-content operation is `Vault.read`. It reads metadata to resolve embed paths and listens to externally generated vault events. It never calls `modify`, `create`, `append`, `process`, `delete`, `rename`, adapter writes, or plugin settings storage. No editable web-app state is linked into the bundle.

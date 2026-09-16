@@ -6,6 +6,54 @@ test.beforeEach(async ({ page }) => {
   await expect(page.locator('.totonio-frame-status')).toContainText('1 / 2');
 });
 
+test('Open in Totonio opens only the website without sharing the diagram', async ({ page }) => {
+  await page.evaluate(() => {
+    Reflect.set(window, 'openedSites', []);
+    window.open = (...args: Parameters<typeof window.open>) => {
+      Reflect.get(window, 'openedSites').push(args);
+      return null;
+    };
+  });
+  const before = await page.evaluate(() => ({ view: window.harness.view, json: window.harness.sampleJson }));
+  const button = page.getByRole('button', { name: 'Open in Totonio', exact: true });
+  await button.click();
+  expect(await page.evaluate(() => Reflect.get(window, 'openedSites'))).toEqual([
+    ['https://totonio.pages.dev/', '_blank', 'noopener,noreferrer'],
+  ]);
+  expect(await page.evaluate(() => ({ view: window.harness.view, json: window.harness.sampleJson }))).toEqual(before);
+  await page.keyboard.press('Escape');
+  await expect(button).toBeVisible();
+  await button.click();
+  expect(await page.evaluate(() => Reflect.get(window, 'openedSites').length)).toBe(2);
+  await page.evaluate(() => window.harness.mount(window.harness.sampleJson, true));
+  await expect(button).toHaveCount(0);
+});
+
+test('plugin information displays bundled art and a responsive support bar offline', async ({ page, context }, info) => {
+  await context.setOffline(true);
+  await page.evaluate(() => window.harness.info());
+  await expect(page.getByRole('heading', { name: 'Totonio Presentation', exact: true })).toBeVisible();
+  const images = page.locator('.totonio-info img');
+  await expect(images).toHaveCount(2);
+  expect(await images.evaluateAll(async (elements) => Promise.all(elements.map(async (element) => {
+    const image = element as HTMLImageElement;
+    await image.decode();
+    return image.src.startsWith('data:image/') && image.naturalWidth > 0;
+  })))).toEqual([true, true]);
+  await expect(page.locator('.totonio-info-diagram img')).toHaveAttribute('alt', /Read-only Totonio plugin diagram view/);
+  expect(await page.locator('#pane').evaluate((element) => element.scrollWidth <= element.clientWidth)).toBe(true);
+  await page.screenshot({ path: info.outputPath('info-top.png') });
+  const coffee = page.getByRole('link', { name: 'Buy me a coffee (opens in your browser)' });
+  await coffee.scrollIntoViewIfNeeded();
+  await expect(coffee).toHaveAttribute('href', 'https://www.buymeacoffee.com/vladimirplk');
+  expect(await coffee.evaluate((element) => {
+    const bounds = element.getBoundingClientRect();
+    return bounds.left >= 0 && bounds.right <= innerWidth;
+  })).toBe(true);
+  await page.screenshot({ path: info.outputPath('info-support.png') });
+  await expect(page.locator('.totonio-info iframe, .totonio-info input')).toHaveCount(0);
+});
+
 test('renders a nonblank presentation with decoded offline assets', async ({ page }, info) => {
   const errors: string[] = [];
   page.on('pageerror', (error) => errors.push(error.message));

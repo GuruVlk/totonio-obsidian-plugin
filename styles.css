@@ -17,3 +17,23 @@
 .totonio-preview .totonio-surface, .totonio-preview.is-frame .totonio-surface { cursor: pointer; touch-action: auto; }
 .totonio-error { padding: 16px; color: var(--text-error); font-size: var(--font-ui-small, 13px); white-space: pre-wrap; overflow-wrap: anywhere; }
 @media (max-width: 400px) { .totonio-toolbar { padding-inline: 4px; gap: 2px; } .totonio-preview { height: 200px; } }
+
+.totonio-info { max-width: 760px; margin: 0 auto; color: var(--text-normal); font-family: var(--font-interface); line-height: 1.6; letter-spacing: 0; overflow-wrap: anywhere; }
+.totonio-info-header { text-align: center; padding: 12px 0 4px; }
+.totonio-info h1 { font-size: 28px; line-height: 1.2; margin: 0 0 8px; letter-spacing: 0; }
+.totonio-info h2 { font-size: 20px; margin: 28px 0 8px; }
+.totonio-info h3 { font-size: 16px; margin: 12px 0 4px; }
+.totonio-info p { margin: 8px 0 16px; }
+.totonio-info-meta { color: var(--text-muted); font-size: 12px; }
+.totonio-info-mascot { display: block; width: 220px; max-width: 100%; height: auto; aspect-ratio: 1; object-fit: contain; margin: 8px auto 0; }
+.totonio-info-diagram { margin: 24px 0; min-width: 0; }
+.totonio-info-diagram img { display: block; width: 100%; height: auto; aspect-ratio: 8 / 5; object-fit: contain; border-radius: 6px; }
+.totonio-info pre { padding: 14px; background: var(--background-secondary); border-radius: 4px; white-space: pre-wrap; overflow-wrap: anywhere; }
+.totonio-info li { margin: 8px 0; }
+.totonio-info-support { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; padding: 20px 0; margin-top: 28px; border-top: 1px solid var(--background-modifier-border); border-bottom: 1px solid var(--background-modifier-border); }
+.totonio-info-support > div { flex: 1 1 250px; min-width: 0; }
+.totonio-info-support p { font-size: 13px; color: var(--text-muted); margin: 4px 0 0; }
+.totonio-info .totonio-coffee-link { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 14px; max-width: 100%; background: #ffdd54; color: #252421; border-radius: 5px; font-weight: 600; text-decoration: none; }
+.totonio-coffee-link svg { flex: 0 0 20px; }
+.totonio-info .totonio-coffee-link:hover { background: #f6cf35; color: #252421; }
+.totonio-coffee-link:focus-visible { outline: 2px solid var(--interactive-accent); outline-offset: 3px; }
