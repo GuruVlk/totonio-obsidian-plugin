@@ -1,0 +1,390 @@
+{
+  "format": "totonio",
+  "version": 3,
+  "assets": [
+    {
+      "id": "preview",
+      "data": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI5NiIgaGVpZ2h0PSI2NCIgdmlld0JveD0iMCAwIDk2IDY0Ij48cmVjdCB3aWR0aD0iOTYiIGhlaWdodD0iNjQiIHJ4PSI2IiBmaWxsPSIjZDhlY2U2Ii8+PHBhdGggZD0iTTEyIDQ4TDMyIDI0TDUwIDQwTDY2IDE4TDg0IDQ4WiIgZmlsbD0iIzI4NzU2MiIvPjxjaXJjbGUgY3g9IjIwIiBjeT0iMTYiIHI9IjYiIGZpbGw9IiNlNWE5M2QiLz48L3N2Zz4="
+    },
+    {
+      "id": "pixel",
+      "data": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+aF1sAAAAASUVORK5CYII="
+    }
+  ],
+  "shapes": [
+    {
+      "id": "frame-2",
+      "type": "frame",
+      "x": 960,
+      "y": 0,
+      "width": 900,
+      "height": 520,
+      "parentId": null,
+      "color": "#287562",
+      "fill": "#ffffff",
+      "labelSize": "extra-small",
+      "frameOrder": 1,
+      "label": "Services"
+    },
+    {
+      "id": "frame-1",
+      "type": "frame",
+      "x": 0,
+      "y": 0,
+      "width": 900,
+      "height": 520,
+      "parentId": null,
+      "color": "#287562",
+      "fill": "#ffffff",
+      "labelSize": "extra-small",
+      "frameOrder": 0,
+      "label": "System overview"
+    },
+    {
+      "id": "title",
+      "type": "text",
+      "x": 24,
+      "y": 12,
+      "width": 650,
+      "height": 46,
+      "parentId": null,
+      "color": "#287562",
+      "fill": "transparent",
+      "labelSize": "medium",
+      "label": "Totonio / System overview",
+      "labelBold": true
+    },
+    {
+      "id": "group",
+      "type": "group",
+      "x": 24,
+      "y": 86,
+      "width": 550,
+      "height": 232,
+      "parentId": null,
+      "color": "#287562",
+      "fill": "#ffffff",
+      "labelSize": "extra-small"
+    },
+    {
+      "id": "container",
+      "type": "panel",
+      "x": 24,
+      "y": 86,
+      "width": 540,
+      "height": 232,
+      "parentId": "group",
+      "color": "#287562",
+      "fill": "#ffffff",
+      "labelSize": "small",
+      "label": "Workspace",
+      "labelBold": true,
+      "headerFill": "#d8ece6",
+      "iconSize": 24,
+      "iconAssetId": "preview"
+    },
+    {
+      "id": "start",
+      "type": "rect",
+      "x": 48,
+      "y": 168,
+      "width": 128,
+      "height": 80,
+      "parentId": "container",
+      "color": "#287562",
+      "fill": "#ffffff",
+      "labelSize": "small",
+      "label": "Vault",
+      "iconCorner": "bottom-right",
+      "iconSize": 20,
+      "iconAssetId": "preview"
+    },
+    {
+      "id": "decision",
+      "type": "decision",
+      "x": 228,
+      "y": 150,
+      "width": 120,
+      "height": 116,
+      "parentId": "container",
+      "color": "#a07820",
+      "fill": "#fff1c9",
+      "labelSize": "extra-small",
+      "label": "v3?",
+      "cornerStyle": "sharp"
+    },
+    {
+      "id": "image",
+      "type": "image",
+      "x": 416,
+      "y": 166,
+      "width": 112,
+      "height": 78,
+      "parentId": "container",
+      "color": "#287562",
+      "fill": "#ffffff",
+      "labelSize": "extra-small",
+      "label": "Embedded image",
+      "imageAssetId": "preview"
+    },
+    {
+      "id": "route-1",
+      "type": "line",
+      "x": 0,
+      "y": 0,
+      "width": 0,
+      "height": 0,
+      "parentId": "container",
+      "color": "#287562",
+      "fill": "#ffffff",
+      "labelSize": "extra-small",
+      "start": {
+        "type": "shape",
+        "shapeId": "start",
+        "position": 0
+      },
+      "end": {
+        "type": "shape",
+        "shapeId": "decision",
+        "position": 0.5
+      },
+      "arrowDirection": "end",
+      "label": "read",
+      "routeStyle": "orthogonal"
+    },
+    {
+      "id": "route-2",
+      "type": "line",
+      "x": 0,
+      "y": 0,
+      "width": 0,
+      "height": 0,
+      "parentId": "container",
+      "color": "#a07820",
+      "fill": "#ffffff",
+      "labelSize": "extra-small",
+      "start": {
+        "type": "shape",
+        "shapeId": "decision",
+        "position": 0
+      },
+      "end": {
+        "type": "shape",
+        "shapeId": "image",
+        "position": 0.5
+      },
+      "arrowDirection": "end",
+      "label": "render",
+      "routeStyle": "curved"
+    },
+    {
+      "id": "notes",
+      "type": "panel",
+      "x": 600,
+      "y": 86,
+      "width": 270,
+      "height": 232,
+      "parentId": null,
+      "color": "#5576a6",
+      "fill": "#ffffff",
+      "labelSize": "small",
+      "label": "Presentation",
+      "labelBold": true,
+      "headerFill": "#e5ecf6",
+      "body": "**Native rendering**\n- Shapes and hierarchy\n- Routed connectors\n- Embedded assets",
+      "bodyWrap": true,
+      "bodySize": "small"
+    },
+    {
+      "id": "cloud",
+      "type": "cloud",
+      "x": 32,
+      "y": 354,
+      "width": 146,
+      "height": 106,
+      "parentId": null,
+      "color": "#5576a6",
+      "fill": "#e5ecf6",
+      "labelSize": "extra-small",
+      "label": "Cloud"
+    },
+    {
+      "id": "database",
+      "type": "database",
+      "x": 210,
+      "y": 348,
+      "width": 90,
+      "height": 112,
+      "parentId": null,
+      "color": "#287562",
+      "fill": "#d8ece6",
+      "labelSize": "extra-small",
+      "label": "Data"
+    },
+    {
+      "id": "person",
+      "type": "person",
+      "x": 342,
+      "y": 352,
+      "width": 76,
+      "height": 96,
+      "parentId": null,
+      "color": "#ba6558",
+      "fill": "#fae4df",
+      "labelSize": "extra-small",
+      "label": "Viewer"
+    },
+    {
+      "id": "firewall",
+      "type": "firewall",
+      "x": 458,
+      "y": 352,
+      "width": 76,
+      "height": 92,
+      "parentId": null,
+      "color": "#ba6558",
+      "fill": "#fae4df",
+      "labelSize": "extra-small",
+      "label": "Offline"
+    },
+    {
+      "id": "legend",
+      "type": "legend",
+      "x": 602,
+      "y": 342,
+      "width": 268,
+      "height": 148,
+      "parentId": null,
+      "color": "#287562",
+      "fill": "#ffffff",
+      "labelSize": "small",
+      "label": "Components",
+      "labelBold": true,
+      "legendItems": [
+        {
+          "id": "legend-1",
+          "icon": "rect",
+          "label": "Vault content",
+          "fill": "#d8ece6",
+          "color": "#287562"
+        },
+        {
+          "id": "legend-2",
+          "icon": "database2",
+          "label": "Embedded data",
+          "fill": "#e5ecf6",
+          "color": "#5576a6"
+        },
+        {
+          "id": "legend-3",
+          "icon": "plain-line",
+          "label": "Read-only flow",
+          "fill": "transparent",
+          "color": "#ba6558",
+          "borderStyle": "dotted"
+        }
+      ]
+    },
+    {
+      "id": "second-title",
+      "type": "text",
+      "x": 988,
+      "y": 20,
+      "width": 600,
+      "height": 46,
+      "parentId": null,
+      "color": "#287562",
+      "fill": "#ffffff",
+      "labelSize": "medium",
+      "label": "Totonio / Services",
+      "labelBold": true
+    },
+    {
+      "id": "brackets",
+      "type": "brackets",
+      "x": 990,
+      "y": 100,
+      "width": 310,
+      "height": 270,
+      "parentId": null,
+      "color": "#287562",
+      "fill": "#eef6f3",
+      "labelSize": "extra-small",
+      "label": "Container",
+      "labelVerticalAlign": "top"
+    },
+    {
+      "id": "circle",
+      "type": "circle",
+      "x": 1050,
+      "y": 176,
+      "width": 140,
+      "height": 140,
+      "parentId": "brackets",
+      "color": "#5576a6",
+      "fill": "#e5ecf6",
+      "labelSize": "extra-small",
+      "label": "Service"
+    },
+    {
+      "id": "arrow",
+      "type": "arrow",
+      "x": 1360,
+      "y": 180,
+      "width": 140,
+      "height": 90,
+      "parentId": null,
+      "color": "#a07820",
+      "fill": "#fff1c9",
+      "labelSize": "extra-small",
+      "label": "Flow",
+      "rotation": -15
+    },
+    {
+      "id": "database-icon",
+      "type": "database2",
+      "x": 1610,
+      "y": 144,
+      "width": 144,
+      "height": 174,
+      "parentId": null,
+      "color": "#287562",
+      "fill": "#d8ece6",
+      "labelSize": "extra-small",
+      "label": "Store"
+    },
+    {
+      "id": "plain-line",
+      "type": "plain-line",
+      "x": 1000,
+      "y": 415,
+      "width": 700,
+      "height": 0,
+      "parentId": null,
+      "color": "#287562",
+      "fill": "#ffffff",
+      "labelSize": "extra-small",
+      "start": {
+        "type": "free",
+        "x": 1000,
+        "y": 415
+      },
+      "end": {
+        "type": "free",
+        "x": 1730,
+        "y": 415
+      },
+      "label": "Local data only",
+      "arrowDirection": "both",
+      "borderStyle": "double"
+    }
+  ],
+  "viewport": {
+    "x": 38,
+    "y": 54,
+    "zoom": 0.72
+  },
+  "settings": {
+    "gridEnabled": true
+  }
+}

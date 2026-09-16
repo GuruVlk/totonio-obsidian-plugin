@@ -1,0 +1,19 @@
+.totonio-view-content { padding: 0 !important; overflow: hidden !important; }
+.totonio-viewer { display: flex; flex-direction: column; width: 100%; height: 100%; min-width: 0; min-height: 0; overflow: hidden; color: var(--text-normal); font-family: var(--font-interface); letter-spacing: 0; outline: none; }
+.totonio-viewer:focus-visible { box-shadow: inset 0 0 0 2px var(--interactive-accent); }
+.totonio-toolbar { display: flex; flex: 0 0 40px; align-items: center; gap: 4px; padding: 4px 8px; border-bottom: 1px solid var(--background-modifier-border); background: var(--background-primary); box-sizing: border-box; }
+.totonio-toolbar .totonio-control { flex: 0 0 28px; width: 28px; height: 28px; min-width: 28px; padding: 5px; border: 0; border-radius: 4px; box-shadow: none; background: transparent; color: var(--text-muted); cursor: pointer; }
+.totonio-toolbar .totonio-control:hover { background: var(--background-modifier-hover); color: var(--text-normal); }
+.totonio-toolbar .totonio-control:focus-visible { outline: 2px solid var(--interactive-accent); outline-offset: -2px; }
+.totonio-toolbar [hidden] { display: none !important; }
+.totonio-frame-status { flex: 1 1 0; min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-size: var(--font-ui-small, 12px); color: var(--text-muted); }
+.totonio-surface { position: relative; flex: 1 1 0; min-height: 0; min-width: 0; overflow: hidden; background: #f8f7f3; cursor: grab; touch-action: none; user-select: none; -webkit-user-select: none; }
+.totonio-svg { display: block; width: 100%; height: 100%; overflow: hidden; }
+.totonio-svg .totonio-label { font-family: 'Avenir Next', 'Trebuchet MS', sans-serif; letter-spacing: 0; user-select: none; }
+.totonio-frame-dim { fill: rgba(16, 19, 19, 0.36); }
+.totonio-viewer.is-frame .totonio-surface { cursor: default; }
+.totonio-viewer.is-panning .totonio-surface { cursor: grabbing; }
+.totonio-preview { width: 100%; height: 240px; min-height: 160px; max-height: 320px; margin: 8px 0; border: 1px solid var(--background-modifier-border); border-radius: 4px; box-sizing: border-box; cursor: pointer; }
+.totonio-preview .totonio-surface, .totonio-preview.is-frame .totonio-surface { cursor: pointer; touch-action: auto; }
+.totonio-error { padding: 16px; color: var(--text-error); font-size: var(--font-ui-small, 13px); white-space: pre-wrap; overflow-wrap: anywhere; }
+@media (max-width: 400px) { .totonio-toolbar { padding-inline: 4px; gap: 2px; } .totonio-preview { height: 200px; } }

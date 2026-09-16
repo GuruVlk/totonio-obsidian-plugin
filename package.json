@@ -1,0 +1,30 @@
+{
+  "name": "totonio-obsidian",
+  "version": "0.1.0",
+  "description": "Offline, read-only Totonio Presentation viewer for Obsidian.",
+  "main": "main.js",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "node esbuild.config.mjs",
+    "build": "tsc --noEmit && node esbuild.config.mjs production",
+    "test": "vitest run",
+    "test:e2e": "playwright test",
+    "fixtures": "node scripts/build-fixtures.mjs",
+    "lint": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.55.0",
+    "@types/node": "^22.15.17",
+    "@types/pngjs": "^6.0.5",
+    "esbuild": "^0.25.5",
+    "jsdom": "^26.1.0",
+    "obsidian": "latest",
+    "pngjs": "^7.0.0",
+    "typescript": "^5.8.3",
+    "vitest": "^4.1.11"
+  },
+  "dependencies": {
+    "lucide": "^1.46.0"
+  }
+}
