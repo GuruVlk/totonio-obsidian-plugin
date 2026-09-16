@@ -5,9 +5,10 @@
   "main": "main.js",
   "type": "module",
   "private": true,
+  "license": "MIT",
   "scripts": {
     "dev": "node esbuild.config.mjs",
-    "build": "tsc --noEmit && node esbuild.config.mjs production",
+    "build": "tsc --noEmit && node esbuild.config.mjs production && node scripts/verify-release.mjs",
     "test": "vitest run",
     "test:e2e": "playwright test",
     "fixtures": "node scripts/build-fixtures.mjs",

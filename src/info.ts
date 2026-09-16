@@ -5,7 +5,18 @@ import { svgElement } from './render';
 
 export const SUPPORT_URL = 'https://www.buymeacoffee.com/vladimirplk';
 
-export function renderInfo(container: HTMLElement, version: string): void {
+export type InfoHeading = (container: HTMLElement, title: string) => void;
+
+const previewHeading: InfoHeading = (container, title) => {
+  const heading = container.ownerDocument.createElement('div');
+  heading.className = 'setting-item setting-item-heading';
+  heading.setAttribute('role', 'heading');
+  heading.setAttribute('aria-level', '2');
+  heading.textContent = title;
+  container.appendChild(heading);
+};
+
+export function renderInfo(container: HTMLElement, version: string, heading: InfoHeading = previewHeading): void {
   container.replaceChildren();
   const dom = container.ownerDocument;
   const element = <Tag extends keyof HTMLElementTagNameMap>(parent: Element, tag: Tag, text?: string, className?: string): HTMLElementTagNameMap[Tag] => {
@@ -17,7 +28,6 @@ export function renderInfo(container: HTMLElement, version: string): void {
   };
   const page = element(container, 'article', undefined, 'totonio-info');
   const header = element(page, 'header', undefined, 'totonio-info-header');
-  element(header, 'h1', 'Totonio Presentation');
   element(header, 'p', `Version ${version} · By GuruVlk`, 'totonio-info-meta');
   element(header, 'p', 'Architecture and sequence diagrams alongside your notes. Create in Totonio, present in Obsidian.');
   const image = element(header, 'img', undefined, 'totonio-info-mascot');
@@ -27,7 +37,7 @@ export function renderInfo(container: HTMLElement, version: string): void {
   image.height = 720;
 
   element(page, 'p', 'Inspect your Totonio diagrams without leaving your vault. Open a local .totonio file in a native workspace tab, follow its Presentation Frames, or explore freely with pan and zoom.');
-  element(page, 'h2', 'Made for viewing');
+  heading(page, 'Made for viewing');
   element(page, 'p', 'Shapes, nested containers, connectors, labels, embedded images, and corner icons stay together. Everything renders locally and offline. This is a read-only viewer: opening, navigating, and closing a diagram never saves or changes its source file.');
 
   const figure = element(page, 'figure', undefined, 'totonio-info-diagram');
@@ -37,14 +47,14 @@ export function renderInfo(container: HTMLElement, version: string): void {
   artwork.width = 1280;
   artwork.height = 800;
   const caption = element(figure, 'figcaption');
-  element(caption, 'h3', 'Your diagram in presentation view');
+  element(caption, 'strong', 'Your diagram in presentation view');
   element(caption, 'p', 'The plugin\'s own viewer displaying the sample diagram. Inspect the diagram and navigate its frames without editing the file.');
 
-  element(page, 'h2', 'From system design to meeting notes');
+  heading(page, 'From system design to meeting notes');
   element(page, 'p', 'Keep an architecture map beside your design decisions, embed a process flow in a project note, or walk through an API sequence one frame at a time. The same saved diagram works as a full presentation and a compact Markdown preview.');
 
   const web = element(page, 'section', undefined, 'totonio-info-web');
-  element(web, 'h2', 'Create and present in the Totonio web app');
+  heading(web, 'Create and present in the Totonio web app');
   element(web, 'p', 'The web app is the authoring companion. The features below belong to Totonio on the web, not to the read-only Obsidian plugin.');
   const features = element(web, 'ul');
   element(features, 'li', 'Web presentations: create and order Presentation Frames, present a guided walkthrough, or explore the whole canvas. Saved frames can also be played inside Obsidian.');
@@ -56,19 +66,19 @@ export function renderInfo(container: HTMLElement, version: string): void {
   website.target = '_blank';
   website.rel = 'noopener noreferrer';
 
-  element(page, 'h2', 'Getting started');
+  heading(page, 'Getting started');
   const steps = element(page, 'ol');
   element(steps, 'li', 'Place a version 3 .totonio file anywhere in your vault, outside .obsidian, then click it in the file explorer.');
   element(steps, 'li', 'Use the previous/next buttons, Left/Right, or Page Up/Page Down to navigate frames. Focus the viewer first.');
   element(steps, 'li', 'Press Escape for free view. Drag to pan and scroll or pinch to zoom. Reset view restores the saved viewport; Fit content shows the whole diagram.');
   element(page, 'p', 'Diagrams without frames open at their saved viewport. Resizing the pane refits the active frame.');
 
-  element(page, 'h2', 'Embed in a note');
+  heading(page, 'Embed in a note');
   element(page, 'p', 'Add a totonio code block containing one vault-relative file path. Click its static preview to open the full presentation.');
   const code = element(element(page, 'pre'), 'code');
   code.textContent = '```totonio\npath/to/diagram.totonio\n```';
 
-  element(page, 'h2', 'Editing and compatibility');
+  heading(page, 'Editing and compatibility');
   element(page, 'p', 'Use Open in Totonio in the viewer toolbar to open the website in your browser, then select your vault file there. The button does not send your diagram or its path. Save edits back to the same location; if your browser downloads a copy, replace the original manually. The Obsidian viewer refreshes when the source changes.');
   element(page, 'p', 'Only format "totonio", version 3 is supported. Legacy versions 1/2 and .tatamio files are not migrated. Invalid files show an error in the pane. There are no editing tools, exports, telemetry, or background network requests.');
 

@@ -20,9 +20,8 @@
 
 .totonio-info { max-width: 760px; margin: 0 auto; color: var(--text-normal); font-family: var(--font-interface); line-height: 1.6; letter-spacing: 0; overflow-wrap: anywhere; }
 .totonio-info-header { text-align: center; padding: 12px 0 4px; }
-.totonio-info h1 { font-size: 28px; line-height: 1.2; margin: 0 0 8px; letter-spacing: 0; }
-.totonio-info h2 { font-size: 20px; margin: 28px 0 8px; }
-.totonio-info h3 { font-size: 16px; margin: 12px 0 4px; }
+.totonio-info .setting-item-heading { margin-top: 24px; }
+.totonio-info-diagram figcaption { margin-top: 12px; }
 .totonio-info p { margin: 8px 0 16px; }
 .totonio-info-meta { color: var(--text-muted); font-size: 12px; }
 .totonio-info-mascot { display: block; width: 220px; max-width: 100%; height: auto; aspect-ratio: 1; object-fit: contain; margin: 8px auto 0; }

@@ -32,7 +32,7 @@ test('Open in Totonio opens only the website without sharing the diagram', async
 test('plugin information displays bundled art and a responsive support bar offline', async ({ page, context }, info) => {
   await context.setOffline(true);
   await page.evaluate(() => window.harness.info());
-  await expect(page.getByRole('heading', { name: 'Totonio Presentation', exact: true })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Made for viewing', exact: true })).toBeVisible();
   const images = page.locator('.totonio-info img');
   await expect(images).toHaveCount(2);
   expect(await images.evaluateAll(async (elements) => Promise.all(elements.map(async (element) => {

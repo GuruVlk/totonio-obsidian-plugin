@@ -1,9 +1,14 @@
 import esbuild from 'esbuild';
 import process from 'node:process';
 import { builtinModules } from 'node:module';
+import { readFileSync } from 'node:fs';
 
 const prod = process.argv[2] === 'production';
+const notices = ['LICENSE', 'THIRD_PARTY_NOTICES.md']
+  .map((file) => readFileSync(new URL(file, import.meta.url), 'utf8')).join('\n\n');
 const context = await esbuild.context({
+  banner: { js: `/*!\n${notices.replaceAll('*/', '* /')}\n*/` },
+  legalComments: 'inline',
   entryPoints: ['src/main.ts'],
   bundle: true,
   loader: { '.webp': 'dataurl', '.png': 'dataurl' },

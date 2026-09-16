@@ -5,7 +5,7 @@ Use a disposable vault and a built plugin. These application-host checks remain 
 ## Setup
 
 - [ ] Run `npm ci`, `npm run build`, `npm test`, and `npm run test:e2e` successfully.
-- [ ] Install `main.js`, `manifest.json`, and `styles.css` in `.obsidian/plugins/totonio-obsidian/` and enable Totonio Presentation.
+- [ ] Install `main.js`, `manifest.json`, and `styles.css` in `.obsidian/plugins/totonio-presentation/` and enable Totonio Presentation. Disable and remove the old `totonio-obsidian` test plugin first if present.
 - [ ] Open Settings > Totonio Presentation. Confirm the information page shows the welcome tanuki, the plugin's actual diagram-view screenshot (no editor hint illustrations), version, usage guide, and Buy me a coffee bar. Artwork must load offline; only clicking the support link opens the browser.
 - [ ] Copy the repository's `examples` folder into the test vault root.
 - [ ] Record a SHA-256 hash, file size, and modification time of both sample `.totonio` files before viewing them. On macOS use `shasum -a 256 examples/*.totonio` and `stat -f '%N %z %m' examples/*.totonio` in the test vault.

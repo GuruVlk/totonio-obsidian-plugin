@@ -36,4 +36,4 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 ## Totonio
 
-Parsing, geometry, and rendering algorithms were supplied from the local Totonio project by its user. Their ownership and existing rights are unchanged. Module-level provenance and the snapshot revision are documented in `docs/PORTING.md`. No additional license for that source is granted or inferred here.
+Parsing, geometry, and rendering algorithms included in this repository were contributed by Totonio's author, GuruVlk, and are distributed under the repository's MIT license. Module-level provenance and the snapshot revision are documented in `docs/PORTING.md`. This grant covers the code distributed here and does not change the license of the separate Totonio web-app repository. The welcome mascot was generated using Gemini; no exclusive rights in AI-generated output are claimed.

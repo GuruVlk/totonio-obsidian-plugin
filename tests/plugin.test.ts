@@ -30,6 +30,15 @@ vi.mock('obsidian', () => ({
   PluginSettingTab: class {
     containerEl = document.createElement('div');
   },
+  Setting: class {
+    private element: HTMLDivElement;
+    constructor(container: HTMLElement) {
+      this.element = document.createElement('div');
+      container.appendChild(this.element);
+    }
+    setName(name: string) { this.element.textContent = name; return this; }
+    setHeading() { this.element.className = 'setting-item-heading'; return this; }
+  },
   FileView: class extends host.Component {
     app: App;
     contentEl = document.createElement('div');
@@ -44,7 +53,7 @@ vi.mock('obsidian', () => ({
     registerView = vi.fn();
     registerExtensions = vi.fn();
     registerMarkdownCodeBlockProcessor = vi.fn();
-    constructor(public app: App) { super(); }
+    constructor(public app: App, public manifest: { version: string }) { super(); }
   },
 }));
 
@@ -74,6 +83,16 @@ function createHost() {
 beforeEach(() => { document.body.replaceChildren(); });
 
 describe('read-only Obsidian integration', () => {
+  it('renders information sections using native settings headings', () => {
+    const { app } = createHost();
+    const plugin = new TotonioPlugin(app, { version: '0.1.0' } as never);
+    plugin.onload();
+    const tab = vi.mocked(plugin.addSettingTab).mock.calls[0][0];
+    tab.display();
+    expect(tab.containerEl.querySelectorAll('.setting-item-heading')).toHaveLength(6);
+    expect(tab.containerEl.querySelector('h1, h2, h3')).toBeNull();
+    expect(tab.containerEl.textContent).toContain('By GuruVlk');
+  });
   it('registers only .totonio and a native file view and code block processor', () => {
     const { app } = createHost();
     const plugin = new TotonioPlugin(app, {} as never);
