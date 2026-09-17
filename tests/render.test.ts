@@ -45,7 +45,7 @@ describe('native SVG rendering', () => {
     expect(svg.querySelector('script')).toBeNull();
     expect(svg.outerHTML).not.toMatch(/NaN|Infinity/);
   });
-  it.each(['straight', 'orthogonal', 'curved'] as const)('renders %s routes with labels and both arrowheads', (routeStyle) => {
+  it.each(['straight', 'simple-orthogonal', 'orthogonal', 'curved'] as const)('renders %s routes with labels and both arrowheads', (routeStyle) => {
     const shapes = [box, { ...connector, routeStyle, routePoints: [{ x: 250, y: 50 }] }];
     const svg = render(shapes);
     expect(svg.querySelectorAll('.totonio-arrowhead')).toHaveLength(2);
@@ -57,6 +57,15 @@ describe('native SVG rendering', () => {
     const svg = render([box, { ...connector, borderStyle: 'double', arrowDirection: 'start', labelRotation: 30 }]);
     expect(svg.querySelectorAll('.totonio-arrowhead')).toHaveLength(1);
     expect(svg.querySelector('.totonio-connector-label')?.getAttribute('transform')).toContain('rotate(30');
+  });
+  it.each(['rounded', 'sharp'] as const)('draws an unlabelled simple route as one open %s path', (cornerStyle) => {
+    const svg = render([{ ...connector, start: { type: 'free', x: 0, y: 0 }, end: { type: 'free', x: 200, y: 100 },
+      routeStyle: 'simple-orthogonal', cornerStyle, label: undefined, arrowDirection: 'none' }]);
+    const paths = svg.querySelectorAll('.totonio-connector');
+    expect(paths).toHaveLength(1);
+    expect(paths[0].getAttribute('fill')).toBe('none');
+    expect(paths[0].getAttribute('d')).not.toMatch(/[zZ]/);
+    expect(paths[0].getAttribute('stroke-linejoin')).toBe(cornerStyle === 'sharp' ? 'miter' : 'round');
   });
   it('renders images and corner icons only as isolated image elements', () => {
     const data = 'data:image/svg+xml;base64,PHN2Zy8+';

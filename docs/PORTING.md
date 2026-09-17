@@ -39,6 +39,8 @@ Review any regenerated snapshot as a source update, including its v3-only parser
 
 ## Carefully Ported Behavior
 
+The `simple-orthogonal` extension to document version 3 is implemented from the supplied routing specification (2026-09-17). It uses resolved endpoints, shape-center side classification, midpoint rails for facing shape attachments without manual waypoints, and alternating first-leg axes otherwise. It ignores `routeOffset` and obstacles, and shares the original 12-unit corner rounding and connector SVG renderer. Line targets do not supply a shape-border side. The current web source at inspection instead selects the next waypoint-leg axis from the arrival direction; this plugin follows the explicitly supplied rule to flip after every leg. The focused `tests/simpleOrthogonal.test.ts` expectations are authoritative for this port. Re-running the optional core snapshot script against that web source requires reviewing this difference rather than silently accepting changed behavior.
+
 `src/render.ts` ports the read-only rendering branches of `canvas/CanvasScene.tsx` into SVG DOM calls. It uses the original geometry and label calculations, paints diagram objects in the original order, and places connector labels in a second pass. Invisible group shells and presentation-frame outlines are not painted. Shape coordinates remain absolute; hierarchy affects paint order, not nested SVG translations. Source sibling arrays paint back-to-front. Do not replace that ordering with ordinary array iteration.
 
 The original `ShapeIcon.tsx` maps legend kinds to Lucide symbols. This plugin uses the corresponding locally bundled Lucide SVG nodes without React. Only the icons actually used are bundled.

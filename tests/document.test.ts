@@ -37,6 +37,14 @@ describe('structural validation', () => {
     expect(state.view).toEqual(document.viewport);
     expect(state.shapes[0]).toMatchObject(shape);
   });
+  it('accepts simple-orthogonal in version 3 without rewriting the document', () => {
+    const connector = { ...shape, type: 'line', routeStyle: 'simple-orthogonal', routeOffset: 123,
+      start: { type: 'free', x: 0, y: 0 }, end: { type: 'free', x: 200, y: 100 } };
+    const state = load({ shapes: [connector] });
+    expect(state.shapes[0]).toMatchObject(connector);
+    expect(state.view).toEqual(document.viewport);
+    expect(() => load({ shapes: [{ ...connector, routeStyle: 'unknown-route' }] })).toThrow('malformed');
+  });
   it.each(['one-mobility-city', 'the-commuter'])('rejects the actual legacy %s document', (name) => {
     const json = readFileSync(new URL(`./fixtures/${name}.totonio`, import.meta.url), 'utf8');
     expect(() => loadDocument(json, `${name}.totonio`)).toThrow('Unsupported Totonio version 2');

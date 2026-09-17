@@ -673,6 +673,51 @@ const obstacleAvoidingRoute = (start: Point, end: Point, obstacles: Bounds[]): P
         return !((previous.x === point.x && point.x === next.x) || (previous.y === point.y && point.y === next.y));
     });
 };
+const simpleOrthogonalRoute = (shape: CanvasShape, shapes: CanvasShape[], start: Point, end: Point): Point[] => {
+    const sideOf = (endpoint: ConnectorEndpoint | undefined, point: Point): AttachmentSide | null => {
+        if (endpoint?.type !== 'shape') return null;
+        const target = findShapeById(endpoint.shapeId, shapes);
+        if (!target || target.type === 'line' || target.type === 'plain-line') return null;
+        const center = shapeCenter(target);
+        const deltaX = point.x - center.x;
+        const deltaY = point.y - center.y;
+        return Math.abs(deltaX) >= Math.abs(deltaY)
+            ? deltaX < 0 ? 'left' : 'right'
+            : deltaY < 0 ? 'top' : 'bottom';
+    };
+    const startSide = sideOf(shape.start, start);
+    const endSide = sideOf(shape.end, end);
+    if (!shape.routePoints?.length && startSide && endSide) {
+        if ((startSide === 'right' && endSide === 'left' && end.x > start.x)
+            || (startSide === 'left' && endSide === 'right' && end.x < start.x)) {
+            if (Math.abs(end.y - start.y) < 0.001) return [start, end];
+            const middleX = (start.x + end.x) / 2;
+            return [start, { x: middleX, y: start.y }, { x: middleX, y: end.y }, end];
+        }
+        if ((startSide === 'bottom' && endSide === 'top' && end.y > start.y)
+            || (startSide === 'top' && endSide === 'bottom' && end.y < start.y)) {
+            if (Math.abs(end.x - start.x) < 0.001) return [start, end];
+            const middleY = (start.y + end.y) / 2;
+            return [start, { x: start.x, y: middleY }, { x: end.x, y: middleY }, end];
+        }
+    }
+    const verticalSide = (side: AttachmentSide) => side === 'top' || side === 'bottom';
+    let vertical = startSide ? verticalSide(startSide)
+        : endSide ? !verticalSide(endSide)
+        : Math.abs(end.x - start.x) < Math.abs(end.y - start.y);
+    const points = [start, ...(shape.routePoints ?? []), end];
+    const result: Point[] = [{ x: start.x, y: start.y }];
+    for (let index = 1; index < points.length; index++) {
+        const from = points[index - 1];
+        const to = points[index];
+        if (Math.abs(to.x - from.x) > 0.001 && Math.abs(to.y - from.y) > 0.001) {
+            result.push(vertical ? { x: from.x, y: to.y } : { x: to.x, y: from.y });
+        }
+        result.push({ x: to.x, y: to.y });
+        vertical = !vertical;
+    }
+    return result.filter((point, index) => index === 0 || point.x !== result[index - 1].x || point.y !== result[index - 1].y);
+};
 const connectorRouteCache = new WeakMap<CanvasShape[], WeakMap<CanvasShape, Point[]>>();
 export const connectorPathPoints = (shape: CanvasShape, shapes: CanvasShape[], ancestors = new Set<string>()): Point[] => {
     if (ancestors.size > 0)
@@ -693,6 +738,8 @@ const computeConnectorPathPoints = (shape: CanvasShape, shapes: CanvasShape[], a
     const points = connectorPoints(shape, shapes, ancestors);
     const route = [points.start, ...(shape.routePoints ?? []), points.end];
     const cornerRadius = shape.cornerStyle === 'sharp' ? 0 : ROUTE_CORNER_RADIUS;
+    if (shape.routeStyle === 'simple-orthogonal')
+        return roundedRoutePoints(simpleOrthogonalRoute(shape, shapes, points.start, points.end), cornerRadius);
     if (shape.routeStyle === 'orthogonal') {
         const clearance = orthogonalClearance(shape);
         if (shape.routePoints?.length) {

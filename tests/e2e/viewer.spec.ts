@@ -6,6 +6,26 @@ test.beforeEach(async ({ page }) => {
   await expect(page.locator('.totonio-frame-status')).toContainText('1 / 2');
 });
 
+test('opens v3 simple-orthogonal connectors in full view and static previews', async ({ page }, info) => {
+  const json = await page.evaluate(() => JSON.stringify({ ...window.harness.sampleDocument,
+    shapes: window.harness.sampleDocument.shapes.map((shape) => shape.type === 'line'
+      ? { ...shape, routeStyle: 'simple-orthogonal', routeOffset: 999 } : shape),
+  }));
+  for (const preview of [false, true]) {
+    await page.evaluate(({ json, preview }) => window.harness.mount(json, preview), { json, preview });
+    await expect(page.getByRole('alert')).toHaveCount(0);
+    await expect(page.locator('[data-shape-id="route-1"] .totonio-arrowhead')).toHaveCount(1);
+    await expect(page.locator('[data-label-for="route-1"]')).toHaveText('read');
+    const paths = page.locator('[data-shape-id="route-1"] .totonio-connector');
+    expect(await paths.count()).toBeGreaterThan(0);
+    for (const path of await paths.all()) {
+      await expect(path).toHaveAttribute('fill', 'none');
+      expect(await path.getAttribute('d')).not.toMatch(/NaN|Infinity|[zZ]/);
+    }
+    await page.locator('.totonio-svg').screenshot({ path: info.outputPath(`simple-orthogonal-${preview ? 'embed' : 'view'}.png`) });
+  }
+});
+
 test('glides through real presentation pixels without rebuilding diagram nodes', async ({ page }, info) => {
   await page.emulateMedia({ reducedMotion: 'no-preference' });
   await page.evaluate(() => {
