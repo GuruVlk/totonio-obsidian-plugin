@@ -45,6 +45,12 @@ The original `ShapeIcon.tsx` maps legend kinds to Lucide symbols. This plugin us
 
 The source's `hooks/usePresentationMode.ts` frame fitting, ordering in `App.tsx`, and frame dimming branch in `CanvasScene.tsx` inform `presentation.ts` and `viewer.ts`. These files do not import either source component. Frame ordering is stable ascending `frameOrder`; stepping wraps; playback parks and restores a separate free viewport.
 
+As of 0.1.2, `src/viewTween.ts` ports the exact `canvas/viewTween.ts` algorithm inspected on 2026-09-17: 840 ms duration, cubic ease-in/ease-out, and geometric zoom interpolation. Only local variable names and formatting differ. The viewer's animation loop follows `usePresentationMode.ts`: capture the displayed camera at navigation time, cancel an earlier transition, request animation frames, and settle at the exact target. The active frame changes immediately and its dimming mask follows the moving camera; it is not a crossfade or a separately interpolated mask.
+
+Animation uses the owning window's clock, media query, and animation callbacks for pop-out compatibility. System reduced motion disables it, including when that preference changes during a transition. Escape, real pane resizing, and disposal cancel callbacks. A per-view wind-icon toggle permits instant transitions without writing settings. Unlike the web app's user-initiated entry, opening a file initially fits Frame 1 immediately; subsequent frame navigation and starting playback from free view glide.
+
+The plugin keeps SVG shape, label, and image nodes alive while zoom changes. Rendering builds a list of updates for screen-sized corners, rounded diamonds, and panel headers; each animation tick changes those attributes, the camera transform, and the frame mask rather than rebuilding the SVG tree. Renderer parity tests compare incremental zoom with a fresh render, and deterministic animation tests check the 840 ms timeline and cancellation. Geometry remains unchanged in the document.
+
 Fit content follows the visual-bounds principle in `canvas/fitSelection.ts`: exclude invisible group/frame shells, include every descendant even when it overflows its parent, and include connector label/arrow bounds.
 
 ## Intentional Differences

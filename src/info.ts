@@ -70,6 +70,7 @@ export function renderInfo(container: HTMLElement, version: string, heading: Inf
   element(steps, 'li', 'Use the previous/next buttons, Left/Right, or Page Up/Page Down to navigate frames. Focus the viewer first.');
   element(steps, 'li', 'Press Escape for free view. Drag to pan and scroll or pinch to zoom. Reset view restores the saved viewport; Fit content shows the whole diagram.');
   element(page, 'p', 'Diagrams without frames open at their saved viewport. Resizing the pane refits the active frame.');
+  element(page, 'p', 'Frame navigation uses the same 840 ms glide as Totonio: gently eased movement and geometric zoom. Use the wind-icon Glide between frames toggle for instant transitions. Reduce Motion in your system settings disables glide automatically. The toggle applies only to the current view and is not saved.');
 
   heading(page, 'Embed in a note');
   element(page, 'p', 'Add a totonio code block containing one vault-relative file path. Click its static preview to open the full presentation.');

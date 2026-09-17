@@ -6,6 +6,96 @@ test.beforeEach(async ({ page }) => {
   await expect(page.locator('.totonio-frame-status')).toContainText('1 / 2');
 });
 
+test('glides through real presentation pixels without rebuilding diagram nodes', async ({ page }, info) => {
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  await page.evaluate(() => {
+    const sample = window.harness.sampleDocument;
+    window.harness.mount(JSON.stringify({ ...sample, shapes: sample.shapes.map((shape) =>
+      shape.id === 'frame-2' ? { ...shape, width: 600, height: 350 } : shape) }));
+  });
+  await page.clock.install();
+  await page.clock.pauseAt(new Date());
+  const camera = () => page.locator('.totonio-svg > g').evaluate((element) => {
+    const matrix = (element as SVGGElement).transform.baseVal.consolidate()!.matrix;
+    return { x: matrix.e, y: matrix.f, zoom: matrix.a };
+  });
+  await page.evaluate(() => {
+    const scene = document.querySelector('.totonio-svg > g')!;
+    Reflect.set(window, 'originalDiagramImage', scene.querySelector('image'));
+    Reflect.set(window, 'diagramReplacements', 0);
+    new MutationObserver((records) => {
+      Reflect.set(window, 'diagramReplacements', Reflect.get(window, 'diagramReplacements') + records.length);
+    }).observe(scene, { childList: true, subtree: true });
+  });
+  const from = await camera();
+  const before = await page.locator('.totonio-svg').screenshot();
+  await page.getByRole('button', { name: 'Next frame', exact: true }).click();
+  const to = await page.evaluate(() => window.harness.view!);
+  await page.clock.runFor(420);
+  const during = await camera();
+  expect(during.x).toBeLessThan(from.x);
+  expect(during.x).toBeGreaterThan(to.x);
+  expect(during.zoom).toBeGreaterThan(Math.min(from.zoom, to.zoom));
+  expect(during.zoom).toBeLessThan(Math.max(from.zoom, to.zoom));
+  const midway = await page.locator('.totonio-svg').screenshot({ path: info.outputPath('glide-midway.png') });
+  expect(midway.equals(before)).toBe(false);
+  const pixels = PNG.sync.read(midway);
+  let colors = 0;
+  for (let offset = 0; offset < pixels.data.length; offset += 4) {
+    if (Math.max(...pixels.data.subarray(offset, offset + 3)) - Math.min(...pixels.data.subarray(offset, offset + 3)) > 30) colors++;
+  }
+  expect(colors).toBeGreaterThan(100);
+  await page.clock.runFor(440);
+  const final = await camera();
+  expect(final.x).toBeCloseTo(to.x, 3);
+  expect(final.y).toBeCloseTo(to.y, 3);
+  expect(final.zoom).toBeCloseTo(to.zoom, 5);
+  expect(await page.evaluate(() => Reflect.get(window, 'diagramReplacements'))).toBe(0);
+  expect(await page.evaluate(() => document.querySelector('.totonio-svg image') === Reflect.get(window, 'originalDiagramImage'))).toBe(true);
+  await page.locator('.totonio-svg').screenshot({ path: info.outputPath('glide-complete.png') });
+});
+
+test('glide can be interrupted, disabled, and cancelled by resize or reduced motion', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  await page.clock.install();
+  await page.clock.pauseAt(new Date());
+  const scene = page.locator('.totonio-svg > g');
+  const initial = await scene.getAttribute('transform');
+  await page.getByRole('button', { name: 'Next frame', exact: true }).click();
+  await page.clock.runFor(210);
+  const intermediate = await scene.getAttribute('transform');
+  expect(intermediate).not.toBe(initial);
+  await page.keyboard.press('ArrowLeft');
+  expect(await scene.getAttribute('transform')).toBe(intermediate);
+  await page.clock.runFor(860);
+  expect(await scene.getAttribute('transform')).toBe(initial);
+  await page.keyboard.press('PageDown');
+  await page.clock.runFor(200);
+  await page.keyboard.press('Escape');
+  await page.clock.runFor(1000);
+  await expect(scene).toHaveAttribute('transform', 'translate(38 54) scale(0.72)');
+  await page.getByRole('button', { name: 'Start frames' }).click();
+  await page.clock.runFor(100);
+  await page.evaluate(() => { document.getElementById('pane')!.style.cssText = 'width:280px;height:420px'; });
+  await page.clock.runFor(100);
+  const resized = await scene.getAttribute('transform');
+  await page.clock.runFor(1000);
+  expect(await scene.getAttribute('transform')).toBe(resized);
+  await page.getByRole('button', { name: 'Glide between frames' }).click();
+  await expect(page.getByRole('button', { name: 'Glide between frames' })).toHaveAttribute('aria-pressed', 'false');
+  await page.keyboard.press('PageDown');
+  const instant = await scene.getAttribute('transform');
+  await page.clock.runFor(1000);
+  expect(await scene.getAttribute('transform')).toBe(instant);
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.clock.runFor(30);
+  await expect(page.getByRole('button', { name: 'Glide between frames' })).toBeDisabled();
+  await page.keyboard.press('PageUp');
+  const reduced = await scene.getAttribute('transform');
+  await page.clock.runFor(1000);
+  expect(await scene.getAttribute('transform')).toBe(reduced);
+});
+
 test('Open in Totonio opens only the website without sharing the diagram', async ({ page }) => {
   await page.evaluate(() => {
     Reflect.set(window, 'openedSites', []);

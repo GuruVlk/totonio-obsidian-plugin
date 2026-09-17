@@ -1,17 +1,15 @@
-# Totonio Presentation 0.1.1
+# Totonio Presentation 0.1.2
 
 Architecture and sequence diagrams alongside your notes. Create in Totonio, present in Obsidian.
 
-## Review Improvements
+## Totonio Presentation Glide
 
-- Fixed parser type assertions and made route-point validation explicitly type-safe.
-- Replaced native HTML creation calls with Obsidian helpers, retaining offline SVG rendering.
-- Added searchable read-only presentation-guide definitions for Obsidian 1.13+, with the existing information page retained on 1.12.7.
-- Reworded configuration-folder guidance to support custom vault configuration locations.
-- Replaced CSS `!important` overrides with scoped selectors.
-- Removed Node file-system detection from the Playwright configuration; browser selection is explicit.
-- Added official Obsidian ESLint rules to local and CI verification.
-- Releases are now built, tested, and attested in GitHub Actions. Only the three supported installation assets are attached; license notices remain in the bundle.
+- Frame navigation now uses Totonio's exact 840 ms glide, with cubic easing and geometric zoom interpolation.
+- Rapid navigation redirects from the currently displayed camera position instead of jumping or queuing transitions.
+- A wind-icon toggle enables instant navigation for the current view. System Reduce Motion overrides glide automatically, including changes made during a transition.
+- Escape, pane resizing, and view closure cancel animation cleanly. Frames remain fitted to the Obsidian pane; initial file opening and Markdown previews are still instant.
+- SVG shapes, text, and images stay mounted during animation. Only camera, mask, and zoom-dependent corner geometry are updated.
+- The plugin remains offline and read-only. Glide preferences are in-memory only, with no vault or settings writes.
 
 ## Included
 

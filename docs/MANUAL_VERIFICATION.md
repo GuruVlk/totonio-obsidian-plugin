@@ -17,6 +17,9 @@ Use a disposable vault and a built plugin. These application-host checks remain 
 - [ ] Confirm shapes, nested containers, text, header/body formatting, fills, borders, icons, images, connector labels, shafts, and arrowheads are visible.
 - [ ] Confirm the area outside the active frame is dimmed and frame editing outlines are absent.
 - [ ] Navigate with previous/next buttons; test wrapping from first to last and last to first.
+- [ ] Confirm frame changes use Totonio's 840 ms glide. Test rapid next/previous presses mid-transition, transitions between differently sized frames, and the wind-icon toggle for instant changes.
+- [ ] Enable system Reduce Motion before opening the viewer and while a glide is running. Navigation should be instant and the glide toggle disabled. Disable Reduce Motion again and confirm glide is available.
+- [ ] Resize or close a pane mid-glide and press Escape mid-glide. No stale camera updates should occur. Test a pop-out window and a large image-heavy diagram for smoothness.
 - [ ] Focus the viewer and navigate using Left, Right, Page Up, and Page Down. These keys must not move frames while focus is in a different Markdown editor pane.
 - [ ] Press Escape or Free view. The original free viewport returns, and dimming disappears. Start frames restarts at Frame 1.
 - [ ] Confirm there are no editing handles, selection, Properties, Structure, custom document tabs, import/export, editing menus, or undo/redo controls.

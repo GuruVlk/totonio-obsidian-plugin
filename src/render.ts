@@ -142,7 +142,7 @@ function renderConnector(parent: Element, labelLayer: Element, shape: CanvasShap
   });
 }
 
-function renderShape(parent: Element, labels: Element, shape: CanvasShape, shapes: CanvasShape[], zoom: number): void {
+function renderShape(parent: Element, labels: Element, shape: CanvasShape, shapes: CanvasShape[], zoom: number, zoomUpdates: Array<(zoom: number) => void>): void {
   const geometry = getShapeDefinition(shape.type).geometry;
   if (geometry === 'frame' || geometry === 'group') return;
   const group = svgElement(parent, 'g', { 'data-shape-id': shape.id, 'data-shape-type': shape.type,
@@ -234,12 +234,28 @@ function renderShape(parent: Element, labels: Element, shape: CanvasShape, shape
       svgElement(group, 'rect', { ...common, ...rectangle });
       renderIcon(group, shape);
   }
+  if (shape.cornerStyle !== 'sharp') {
+    if (geometry === 'rectangle' || geometry === 'panel' || geometry === 'legend') {
+      const rectangles = [...group.children].filter((child) => child.tagName === 'rect');
+      for (const rectangle of rectangles) zoomUpdates.push((nextZoom) => rectangle.setAttribute('rx', String(5 / nextZoom)));
+      if (geometry === 'panel' && shape.headerFill) {
+        const header = [...group.children].find((child) => child.tagName === 'path');
+        const dividerY = panelLayout(shape).dividerY;
+        if (header) zoomUpdates.push((nextZoom) => header.setAttribute('d', panelHeaderPathData(shape, dividerY, 5 / nextZoom)));
+      }
+    } else if (geometry === 'diamond') {
+      const path = group.firstElementChild!;
+      zoomUpdates.push((nextZoom) => path.setAttribute('d', roundedDiamondPath(shape, 5 / nextZoom)));
+    }
+  }
   renderLabel(group, shape);
 }
 
-export function renderDiagram(parent: SVGGElement, shapes: CanvasShape[], zoom: number): void {
+export function renderDiagram(parent: SVGGElement, shapes: CanvasShape[], zoom: number): (zoom: number) => void {
   parent.replaceChildren();
   const objects = svgElement(parent, 'g', { class: 'totonio-objects' });
   const labels = svgElement(parent, 'g', { class: 'totonio-connector-labels' });
-  for (const shape of shapesInPaintOrder(shapes)) renderShape(objects, labels, shape, shapes, zoom);
+  const zoomUpdates: Array<(zoom: number) => void> = [];
+  for (const shape of shapesInPaintOrder(shapes)) renderShape(objects, labels, shape, shapes, zoom, zoomUpdates);
+  return (nextZoom) => { for (const update of zoomUpdates) update(nextZoom); };
 }

@@ -5,6 +5,8 @@
 .totonio-toolbar .totonio-control { flex: 0 0 28px; width: 28px; height: 28px; min-width: 28px; padding: 5px; border: 0; border-radius: 4px; box-shadow: none; background: transparent; color: var(--text-muted); cursor: pointer; }
 .totonio-toolbar .totonio-control:hover { background: var(--background-modifier-hover); color: var(--text-normal); }
 .totonio-toolbar .totonio-control:focus-visible { outline: 2px solid var(--interactive-accent); outline-offset: -2px; }
+.totonio-toolbar .totonio-control[aria-pressed="true"] { color: var(--text-on-accent); background: var(--interactive-accent); }
+.totonio-toolbar .totonio-control:disabled { opacity: 0.5; cursor: default; }
 .totonio-viewer .totonio-toolbar .totonio-control[hidden] { display: none; }
 .totonio-frame-status { flex: 1 1 0; min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-size: var(--font-ui-small, 12px); color: var(--text-muted); }
 .totonio-surface { position: relative; flex: 1 1 0; min-height: 0; min-width: 0; overflow: hidden; background: #f8f7f3; cursor: grab; touch-action: none; user-select: none; -webkit-user-select: none; }

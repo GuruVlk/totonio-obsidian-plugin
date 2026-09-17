@@ -16,6 +16,22 @@ const connector: CanvasShape = { ...box, id: 'connector', type: 'line', start: {
   end: { type: 'free', x: 400, y: 200 }, arrowDirection: 'both', label: 'Connect', routeStyle: 'orthogonal' };
 
 describe('native SVG rendering', () => {
+  it('incremental zoom preserves nodes and matches a fresh render including corners', () => {
+    const shapes: CanvasShape[] = [box, { ...box, id: 'panel', type: 'panel', headerFill: '#abcdef', body: 'Text' },
+      { ...box, id: 'diamond', type: 'decision' }, { ...box, id: 'sharp', cornerStyle: 'sharp' },
+      { ...box, id: 'legend', type: 'legend' }, { ...box, id: 'brackets', type: 'brackets' }];
+    const svg = svgElement(document.body, 'svg');
+    const group = svgElement(svg, 'g');
+    const fresh = svgElement(svg, 'g');
+    const updateZoom = renderDiagram(group, shapes, 1);
+    const original = group.querySelector('[data-shape-id="panel"]');
+    for (const zoom of [0.3, 2, 1.4]) {
+      updateZoom(zoom);
+      renderDiagram(fresh, shapes, zoom);
+      expect(group.innerHTML).toBe(fresh.innerHTML);
+      expect(group.querySelector('[data-shape-id="panel"]')).toBe(original);
+    }
+  });
   it('paints parents before children with absolute coordinates and invisible groups', () => {
     const svg = render([{ ...box, id: 'child', parentId: 'box', x: 40 }, box, { ...box, id: 'group', type: 'group' }]);
     expect([...svg.querySelectorAll('[data-shape-id]')].map((element) => element.getAttribute('data-shape-id'))).toEqual(['box', 'child']);
