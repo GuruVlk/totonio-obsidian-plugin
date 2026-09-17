@@ -1,19 +1,17 @@
-# Totonio Presentation 0.1.3
+# Totonio Presentation 0.1.4
 
 Architecture and sequence diagrams alongside your notes. Create in Totonio, present in Obsidian.
 
 ## Current Document Compatibility
 
-- Version 3 documents containing the new `simple-orthogonal` connector style now open instead of being rejected.
-- Facing shape attachments use a centered rail. Other routes use one corner per leg with alternating axes, following the supplied routing specification.
-- Rounded and sharp corners, labels, arrowheads, and static Markdown previews are supported. Obstacles and `routeOffset` do not affect this style.
+- Connectors drawn with Totonio's Orthogonal route (`simple-orthogonal`) now match the web app exactly. A rail the author dragged between two facing objects is drawn where they left it, and a route with hand-placed bends follows the same corners the editor shows. Earlier plugin versions centred the rail and could turn a bent route differently.
+- A connector attached far along the long side of a wide or tall object now leaves that side straight out, as it does in the web app, instead of setting off along the edge. This applies to both Orthogonal and Smart (`orthogonal`) routes.
+- Rounded and sharp corners, labels, arrowheads, and static Markdown previews are unchanged. Obstacles still do not affect the Orthogonal style.
 - No document migration or format version bump is needed. The plugin remains offline and read-only, with the existing presentation glide preserved.
-
-For routes with multiple manual waypoints, this implementation follows the supplied rule to flip the axis after every leg. The inspected web-app implementation derives the next axis from the arrival direction instead, so those particular routes can differ. See the porting notes in the repository.
 
 ## Update
 
-In Obsidian, open Settings > Community plugins, check for updates, and update Totonio Presentation to 0.1.3 when available. The plugin does not install or update itself. The Community directory may need time to detect and review this release.
+In Obsidian, open Settings > Community plugins, check for updates, and update Totonio Presentation to 0.1.4 when available. The plugin does not install or update itself. The Community directory may need time to detect and review this release.
 
 ## Included
 

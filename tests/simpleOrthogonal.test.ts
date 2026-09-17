@@ -18,10 +18,12 @@ describe('simple orthogonal routes', () => {
   ])('chooses the first free axis by displacement %#', (end, expected) => {
     expect(route(line({ end: end as ReturnType<typeof free> }))).toEqual(expected);
   });
-  it('flips after each leg including aligned and duplicate waypoints', () => {
+  it('sets each leg off across the direction the previous one arrived from, as the web app does', () => {
+    // Two L-shaped legs: both arrive vertically, so both following legs set off horizontally.
     const connector = line({ routePoints: [{ x: 50, y: 30 }, { x: 80, y: 60 }] });
     expect(route(connector)).toEqual([{ x: 0, y: 0 }, { x: 50, y: 0 }, { x: 50, y: 30 },
-      { x: 50, y: 60 }, { x: 80, y: 60 }, { x: 200, y: 60 }, { x: 200, y: 100 }]);
+      { x: 80, y: 30 }, { x: 80, y: 60 }, { x: 200, y: 60 }, { x: 200, y: 100 }]);
+    // A straight leg flips the axis; a zero-length one counts as horizontal.
     expect(route(line({ routePoints: [{ x: 50, y: 0 }] }))).toEqual([
       { x: 0, y: 0 }, { x: 50, y: 0 }, { x: 50, y: 100 }, { x: 200, y: 100 },
     ]);
@@ -44,12 +46,35 @@ describe('simple orthogonal routes', () => {
     expect(route(connector, shapes)).toEqual(expected);
     expect(route({ ...connector, cornerStyle: 'rounded' }, shapes)).toEqual(roundedRoutePoints(expected, 12));
   });
-  it('collapses aligned facing ends and ignores obstacles and routeOffset', () => {
+  it('collapses aligned facing ends and ignores obstacles', () => {
     const shapes = [box('start', 0, 0), box('end', 300, 0)];
     const connector = line({ start: attached('start', 0), end: attached('end', 0.5) });
     const { start, end } = connectorPoints(connector, shapes);
     expect(route(connector, shapes)).toEqual([start, end]);
     expect(route({ ...connector, routeOffset: 800 }, [...shapes, box('obstacle', 150, 0)])).toEqual([start, end]);
+  });
+  it('slides a facing rail by routeOffset and stops short of either border', () => {
+    const shapes = [box('start', 0, 0), box('end', 300, 200)];
+    const connector = line({ start: attached('start', 0), end: attached('end', 0.5) });
+    const { start, end } = connectorPoints(connector, shapes);
+    const railX = (offset: number) => route({ ...connector, routeOffset: offset }, shapes)[1].x;
+    expect(railX(30)).toBe((start.x + end.x) / 2 + 30);
+    expect(railX(-30)).toBe((start.x + end.x) / 2 - 30);
+    // The clearance keeps a 12-unit leg on each side, so 800 is clamped to 100 - 12 either way.
+    expect(railX(800)).toBe(end.x - 12);
+    expect(railX(-800)).toBe(start.x + 12);
+  });
+  it('treats a point far along the bottom of a wide box as leaving downward', () => {
+    const wide: CanvasShape = { ...box('wide', 0, 0), width: 200, height: 60 };
+    const below = box('below', 400, 300);
+    // Normalized border position 0.133 lands on the bottom edge close to its right corner.
+    const connector = line({ start: attached('wide', 0.133), end: attached('below', 0.75) });
+    const { start } = connectorPoints(connector, [wide, below]);
+    const path = route(connector, [wide, below]);
+    expect(start.y).toBeCloseTo(60);
+    expect(start.x).toBeGreaterThan(180);
+    expect(path[1]).toEqual({ x: start.x, y: path[1].y });
+    expect(path[1].y).toBeGreaterThan(start.y);
   });
   it('uses start side and opposite end-side axes for single attachments', () => {
     const shapes = [box('box', 0, 0)];
@@ -64,7 +89,8 @@ describe('simple orthogonal routes', () => {
     const shapes = [box('start', 0, 0), box('end', 300, 200)];
     const connector = line({ start: attached('start', 0), end: attached('end', 0.5), routePoints: [{ x: 150, y: 150 }] });
     const { start, end } = connectorPoints(connector, shapes);
-    expect(route(connector, shapes)).toEqual([start, { x: 150, y: start.y }, { x: 150, y: 150 }, { x: 150, y: end.y }, end]);
+    // The first leg arrives vertically at the bend, so the second sets off horizontally again.
+    expect(route(connector, shapes)).toEqual([start, { x: 150, y: start.y }, { x: 150, y: 150 }, { x: end.x, y: 150 }, end]);
   });
   it('non-facing and backward-facing pairs use one corner with no clearance stubs', () => {
     const shapes = [box('start', 0, 0), box('end', -300, 200)];

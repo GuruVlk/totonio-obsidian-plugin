@@ -93,7 +93,7 @@ Copy the `examples` folder into a test vault to try `Presentation.totonio`, `Fre
 
 ## Compatibility and Safety
 
-Supports the version 3 `simple-orthogonal` connector style: centered rails for facing attachments, otherwise one corner per leg with alternating axes, rounded or sharp corners, and no obstacle avoidance. `routeOffset` does not affect this style. No document migration or format version change is required.
+Supports the version 3 `simple-orthogonal` connector style exactly as the Totonio web app draws it: a rail halfway between two facing attachments, slid by a saved `routeOffset` but never past either border; otherwise one corner per leg, each leg setting off across the direction the previous one arrived from; rounded or sharp corners; and no obstacle avoidance. No document migration or format version change is required.
 
 All 18 current shape kinds are parsed: rectangles, brackets, arrows, circles, decisions, clouds, people, panels, cylinders, database icons, firewalls, legends, images, lines, connectors, text, frames, and groups. Rendering preserves hierarchy, page-space coordinates, rotation, fill/stroke styles, corners, text formatting, routing, arrowheads, labels, embedded images, and supported corner icons.
 
