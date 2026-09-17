@@ -1,15 +1,19 @@
-# Totonio Presentation 0.1.2
+# Totonio Presentation 0.1.3
 
 Architecture and sequence diagrams alongside your notes. Create in Totonio, present in Obsidian.
 
-## Totonio Presentation Glide
+## Current Document Compatibility
 
-- Frame navigation now uses Totonio's exact 840 ms glide, with cubic easing and geometric zoom interpolation.
-- Rapid navigation redirects from the currently displayed camera position instead of jumping or queuing transitions.
-- A wind-icon toggle enables instant navigation for the current view. System Reduce Motion overrides glide automatically, including changes made during a transition.
-- Escape, pane resizing, and view closure cancel animation cleanly. Frames remain fitted to the Obsidian pane; initial file opening and Markdown previews are still instant.
-- SVG shapes, text, and images stay mounted during animation. Only camera, mask, and zoom-dependent corner geometry are updated.
-- The plugin remains offline and read-only. Glide preferences are in-memory only, with no vault or settings writes.
+- Version 3 documents containing the new `simple-orthogonal` connector style now open instead of being rejected.
+- Facing shape attachments use a centered rail. Other routes use one corner per leg with alternating axes, following the supplied routing specification.
+- Rounded and sharp corners, labels, arrowheads, and static Markdown previews are supported. Obstacles and `routeOffset` do not affect this style.
+- No document migration or format version bump is needed. The plugin remains offline and read-only, with the existing presentation glide preserved.
+
+For routes with multiple manual waypoints, this implementation follows the supplied rule to flip the axis after every leg. The inspected web-app implementation derives the next axis from the arrival direction instead, so those particular routes can differ. See the porting notes in the repository.
+
+## Update
+
+In Obsidian, open Settings > Community plugins, check for updates, and update Totonio Presentation to 0.1.3 when available. The plugin does not install or update itself. The Community directory may need time to detect and review this release.
 
 ## Included
 
