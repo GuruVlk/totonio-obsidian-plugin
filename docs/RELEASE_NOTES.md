@@ -1,17 +1,17 @@
-# Totonio Presentation 0.1.4
+# Totonio Presentation 0.1.5
 
 Architecture and sequence diagrams alongside your notes. Create in Totonio, present in Obsidian.
 
 ## Current Document Compatibility
 
-- Connectors drawn with Totonio's Orthogonal route (`simple-orthogonal`) now match the web app exactly. A rail the author dragged between two facing objects is drawn where they left it, and a route with hand-placed bends follows the same corners the editor shows. Earlier plugin versions centred the rail and could turn a bent route differently.
-- A connector attached far along the long side of a wide or tall object now leaves that side straight out, as it does in the web app, instead of setting off along the edge. This applies to both Orthogonal and Smart (`orthogonal`) routes.
+- An Orthogonal connector (`simple-orthogonal`) with a single corner whose second leg the author dragged sideways in Totonio is now drawn where they left it: the leg stands clear of the corner and a third leg carries the route on to its end. Earlier plugin versions drew the plain corner and ignored the saved offset for this case.
+- The 0.1.4 fixes remain: a rail dragged between two facing objects, hand-placed bends, and attachments far along the long side of a wide object all match the web app.
 - Rounded and sharp corners, labels, arrowheads, and static Markdown previews are unchanged. Obstacles still do not affect the Orthogonal style.
 - No document migration or format version bump is needed. The plugin remains offline and read-only, with the existing presentation glide preserved.
 
 ## Update
 
-In Obsidian, open Settings > Community plugins, check for updates, and update Totonio Presentation to 0.1.4 when available. The plugin does not install or update itself. The Community directory may need time to detect and review this release.
+In Obsidian, open Settings > Community plugins, check for updates, and update Totonio Presentation to 0.1.5 when available. The plugin does not install or update itself. The Community directory may need time to detect and review this release.
 
 ## Included
 

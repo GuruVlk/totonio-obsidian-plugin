@@ -740,9 +740,27 @@ const facingCorridorRoute = (shape: CanvasShape, shapes: CanvasShape[], start: P
     }
     return null;
 };
+// One bend between two attached ends. The leg arriving at the end doubles as the rail: `routeOffset`
+// pulls it clear of the corner and a third leg carries the route back to its end.
+const bentSimpleRoute = (shape: CanvasShape, start: Point, end: Point, firstAxis: 'horizontal' | 'vertical'): Point[] => {
+    const movesX = Math.abs(end.x - start.x) > 0.001;
+    const movesY = Math.abs(end.y - start.y) > 0.001;
+    if (!movesX || !movesY)
+        return [start, end];
+    const offset = shape.routeOffset ?? 0;
+    if (firstAxis === 'horizontal') {
+        const x = end.x + offset;
+        return withoutRepeatedPoints([start, { x, y: start.y }, { x, y: end.y }, end]);
+    }
+    const y = end.y + offset;
+    return withoutRepeatedPoints([start, { x: start.x, y }, { x: end.x, y }, end]);
+};
 const simpleOrthogonalRoute = (shape: CanvasShape, shapes: CanvasShape[], start: Point, end: Point): Point[] => {
-    const facing = shape.routePoints?.length ? null : facingCorridorRoute(shape, shapes, start, end);
-    return facing ?? simpleOrthogonalRoutePoints([start, ...(shape.routePoints ?? []), end], simpleRouteFirstAxis(shape, shapes, start, end));
+    if (!shape.routePoints?.length && borderAttachmentSides(shape, shapes, start, end)) {
+        return facingCorridorRoute(shape, shapes, start, end)
+            ?? bentSimpleRoute(shape, start, end, simpleRouteFirstAxis(shape, shapes, start, end));
+    }
+    return simpleOrthogonalRoutePoints([start, ...(shape.routePoints ?? []), end], simpleRouteFirstAxis(shape, shapes, start, end));
 };
 const connectorRouteCache = new WeakMap<CanvasShape[], WeakMap<CanvasShape, Point[]>>();
 export const connectorPathPoints = (shape: CanvasShape, shapes: CanvasShape[], ancestors = new Set<string>()): Point[] => {

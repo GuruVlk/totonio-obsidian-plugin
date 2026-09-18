@@ -76,6 +76,19 @@ describe('simple orthogonal routes', () => {
     expect(path[1]).toEqual({ x: start.x, y: path[1].y });
     expect(path[1].y).toBeGreaterThan(start.y);
   });
+  it('pulls the second leg of a single-bend route clear of the corner by routeOffset', () => {
+    // Leaves the first box to the right and enters the second from the top: one corner at (350, 50).
+    const shapes = [box('start', 0, 0), box('end', 300, 300)];
+    const connector = line({ start: attached('start', 0), end: attached('end', 0.75) });
+    const { start, end } = connectorPoints(connector, shapes);
+    expect(route(connector, shapes)).toEqual([start, { x: end.x, y: start.y }, end]);
+    // Same expectations as the web app's geometry test for this layout.
+    expect(route({ ...connector, routeOffset: -80 }, shapes)).toEqual([start, { x: end.x - 80, y: start.y }, { x: end.x - 80, y: end.y }, end]);
+    // A leftover offset does nothing once the ends line up.
+    const level = [box('start', 0, 0), box('end', 300, 0)];
+    const straight = line({ start: attached('start', 0), end: attached('end', 0.5), routeOffset: -80 });
+    expect(route(straight, level)).toHaveLength(2);
+  });
   it('uses start side and opposite end-side axes for single attachments', () => {
     const shapes = [box('box', 0, 0)];
     const connector = line({ start: attached('box', 0.25), end: free(250, 250) });

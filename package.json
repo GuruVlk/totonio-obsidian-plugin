@@ -1,6 +1,6 @@
 {
   "name": "totonio-obsidian",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "Offline, read-only Totonio Presentation viewer for Obsidian.",
   "main": "main.js",
   "type": "module",
