@@ -65,6 +65,7 @@ export function renderInfo(container: HTMLElement, version: string, heading: Inf
   website.rel = 'noopener noreferrer';
 
   heading(page, 'Getting started');
+  element(page, 'p', 'In the Command Palette, search for Totonio Presentation: Open demo graph to try the bundled eight-frame Green Tea presentation offline. Open web editor opens the website without transferring a file. Neither command writes to your vault.');
   const steps = element(page, 'ol');
   element(steps, 'li', 'Place a version 3 .totonio file anywhere in your vault, outside its configuration folder, then click it in the file explorer.');
   element(steps, 'li', 'Use the previous/next buttons, Left/Right, or Page Up/Page Down to navigate frames. Focus the viewer first.');

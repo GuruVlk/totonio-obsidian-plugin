@@ -1,17 +1,18 @@
-# Totonio Presentation 0.1.5
+# Totonio Presentation 0.1.6
 
 Architecture and sequence diagrams alongside your notes. Create in Totonio, present in Obsidian.
 
-## Current Document Compatibility
+## Command Palette and Green Tea Demo
 
-- An Orthogonal connector (`simple-orthogonal`) with a single corner whose second leg the author dragged sideways in Totonio is now drawn where they left it: the leg stands clear of the corner and a third leg carries the route on to its end. Earlier plugin versions drew the plain corner and ignored the saved offset for this case.
-- The 0.1.4 fixes remain: a rail dragged between two facing objects, hand-placed bends, and attachments far along the long side of a wide object all match the web app.
-- Rounded and sharp corners, labels, arrowheads, and static Markdown previews are unchanged. Obstacles still do not affect the Orthogonal style.
-- No document migration or format version bump is needed. The plugin remains offline and read-only, with the existing presentation glide preserved.
+- **Totonio Presentation: Open demo graph** opens the bundled Green Tea presentation at Frame 1 of eight, with the existing presentation navigation and glide. Running the command again reveals the existing demo tab.
+- The demo is an unchanged copy of Totonio's `training-4.totonio`, bundled inside the plugin. It works entirely offline and does not create, read, or modify a vault file. Some original training text describes web-editor tools, not plugin editing capabilities.
+- **Totonio Presentation: Open web editor** opens `https://totonio.pages.dev/` in your browser without sending any diagram contents or vault path.
+- Find the commands in Obsidian's Command Palette or assign your own hotkeys. No default keyboard shortcuts are added.
+- Existing version 3 file compatibility, connector routing, Markdown embeds, and read-only behavior are unchanged. The demo requires no extra installation assets.
 
 ## Update
 
-In Obsidian, open Settings > Community plugins, check for updates, and update Totonio Presentation to 0.1.5 when available. The plugin does not install or update itself. The Community directory may need time to detect and review this release.
+In Obsidian, open Settings > Community plugins, check for updates, and update Totonio Presentation to 0.1.6 when available. The plugin does not install or update itself. The Community directory may need time to detect and review this release.
 
 ## Included
 

@@ -22,6 +22,7 @@ for (const file of ['LICENSE', 'THIRD_PARTY_NOTICES.md']) {
 }
 assert.ok(bundle.includes('data:image/webp;'), 'The mascot must be bundled offline');
 assert.ok(bundle.includes('data:image/png;'), 'The viewer screenshot must be bundled offline');
+assert.ok(bundle.includes('Which Tea Fits Your Moment?'), 'The Green Tea demo must be bundled offline');
 assert.ok(!bundle.includes('/Users/'), 'Release must not contain machine-specific paths');
 assert.ok(read('styles.css').includes('.totonio-viewer'), 'Missing viewer styles');
 const runtimeImports = new Set();

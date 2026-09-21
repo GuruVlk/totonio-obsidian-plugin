@@ -3,6 +3,7 @@ import type { App, WorkspaceLeaf } from 'obsidian';
 import { loadDocument } from './document';
 import { Viewer, showError } from './viewer';
 import { TotonioInfoTab } from './settings';
+import { DEMO_VIEW_TYPE, TotonioDemoView } from './demo';
 
 export const VIEW_TYPE = 'totonio-presentation';
 
@@ -110,6 +111,11 @@ export default class TotonioPlugin extends Plugin {
   onload(): void {
     this.addSettingTab(new TotonioInfoTab(this.app, this));
     this.registerView(VIEW_TYPE, (leaf) => new TotonioView(leaf));
+    this.registerView(DEMO_VIEW_TYPE, (leaf) => new TotonioDemoView(leaf));
+    this.addCommand({ id: 'open-demo-graph', name: 'Open demo graph', callback: () => this.openDemo() });
+    this.addCommand({ id: 'open-web-editor', name: 'Open web editor', callback: () => {
+      window.open('https://totonio.pages.dev/', '_blank', 'noopener,noreferrer');
+    } });
     this.registerExtensions(['totonio'], VIEW_TYPE);
     this.registerMarkdownCodeBlockProcessor('totonio', (source, element, context) => {
       const child: TotonioEmbed = new TotonioEmbed(element, this.app, source, context.sourcePath,
@@ -123,6 +129,9 @@ export default class TotonioPlugin extends Plugin {
       for (const leaf of this.app.workspace.getLeavesOfType(VIEW_TYPE)) {
         if (leaf.view instanceof TotonioView) leaf.view.clear();
       }
+      for (const leaf of this.app.workspace.getLeavesOfType(DEMO_VIEW_TYPE)) {
+        if (leaf.view instanceof TotonioDemoView) leaf.view.clear();
+      }
     });
   }
 
@@ -132,6 +141,14 @@ export default class TotonioPlugin extends Plugin {
     if (existing) { await this.app.workspace.revealLeaf(existing); return; }
     const leaf = this.app.workspace.getLeaf('tab');
     await leaf.setViewState({ type: VIEW_TYPE, state: { file: file.path }, active: true });
+    await this.app.workspace.revealLeaf(leaf);
+  }
+
+  async openDemo(): Promise<void> {
+    const existing = this.app.workspace.getLeavesOfType(DEMO_VIEW_TYPE)[0];
+    if (existing) { await this.app.workspace.revealLeaf(existing); return; }
+    const leaf = this.app.workspace.getLeaf('tab');
+    await leaf.setViewState({ type: DEMO_VIEW_TYPE, active: true });
     await this.app.workspace.revealLeaf(leaf);
   }
 }

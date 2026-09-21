@@ -1,9 +1,53 @@
 import { expect, test } from '@playwright/test';
 import { PNG } from 'pngjs';
+import greenTea from '../../src/assets/green-tea.json' with { type: 'json' };
 
 test.beforeEach(async ({ page }) => {
   await page.goto('/tests/harness.html');
   await expect(page.locator('.totonio-frame-status')).toContainText('1 / 2');
+});
+
+test('bundled Green Tea demo renders eight frames and images entirely offline', async ({ page, context }, info) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await context.setOffline(true);
+  const errors: string[] = [];
+  page.on('pageerror', (error) => errors.push(error.message));
+  await page.evaluate(() => window.harness.demo());
+  await expect(page.getByRole('alert')).toHaveCount(0);
+  await expect(page.locator('.totonio-frame-status')).toHaveText('1 / 8: This is First Slide');
+  const firstFrame = greenTea.shapes.find((shape) => shape.type === 'frame' && shape.frameOrder === 0)!;
+  await expect.poll(() => page.evaluate((frame) => {
+    const view = window.harness.view!;
+    const bounds = document.querySelector('.totonio-surface')!.getBoundingClientRect();
+    const left = view.x + frame.x * view.zoom;
+    const top = view.y + frame.y * view.zoom;
+    return left >= 31 && top >= 31 && left + frame.width * view.zoom <= bounds.width - 31
+      && top + frame.height * view.zoom <= bounds.height - 31;
+  }, firstFrame)).toBe(true);
+  const images = await page.locator('.totonio-svg image').evaluateAll(async (elements) => Promise.all(elements.map(async (element) => {
+    const image = new Image();
+    image.src = element.getAttribute('href')!;
+    await image.decode();
+    return image.src.startsWith('data:image/') && image.naturalWidth > 0;
+  })));
+  expect(images.length).toBeGreaterThan(0);
+  expect(images.every(Boolean)).toBe(true);
+  const image = PNG.sync.read(await page.locator('.totonio-svg').screenshot({ path: info.outputPath('green-tea-first.png') }));
+  let colored = 0;
+  for (let offset = 0; offset < image.data.length; offset += 4) {
+    if (Math.max(...image.data.subarray(offset, offset + 3)) - Math.min(...image.data.subarray(offset, offset + 3)) > 30) colored++;
+  }
+  expect(colored).toBeGreaterThan(100);
+  for (let index = 2; index <= 8; index++) {
+    await page.getByRole('button', { name: 'Next frame', exact: true }).click();
+    await expect(page.locator('.totonio-frame-status')).toContainText(`${index} / 8`);
+    expect(await page.locator('.totonio-svg > g').getAttribute('transform')).not.toMatch(/NaN|Infinity/);
+  }
+  await page.keyboard.press('ArrowRight');
+  await expect(page.locator('.totonio-frame-status')).toContainText('1 / 8');
+  await page.keyboard.press('Escape');
+  await expect(page.locator('.totonio-frame-status')).toHaveText('Free view');
+  expect(errors).toEqual([]);
 });
 
 test('opens v3 simple-orthogonal connectors in full view and static previews', async ({ page }, info) => {

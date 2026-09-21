@@ -6,6 +6,7 @@
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
     "moduleResolution": "Bundler",
+    "resolveJsonModule": true,
     "isolatedModules": true,
     "skipLibCheck": true,
     "esModuleInterop": true,

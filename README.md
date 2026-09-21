@@ -63,6 +63,15 @@ No account or payment is required to use the viewer. It makes no background netw
 
 The optional **Open in Totonio** button opens `https://totonio.pages.dev/` in your browser without sending the file or its path. The information page also includes a static **Buy me a coffee** link to `https://www.buymeacoffee.com/vladimirplk`. These sites are contacted by your browser only after you choose their links; no remote widgets, scripts, or images are embedded. The web app and support site operate outside the plugin.
 
+## Command Palette
+
+Open Obsidian's Command Palette (Cmd+P on macOS, Ctrl+P on Windows/Linux) and search for Totonio:
+
+- **Totonio Presentation: Open demo graph** opens the bundled Green Tea presentation at the first of eight frames. Running it again reveals the existing demo tab. It works offline without creating a file in your vault.
+- **Totonio Presentation: Open web editor** opens `https://totonio.pages.dev/` in your browser. It does not send the active diagram or its path; select a file in the web app yourself.
+
+Obsidian prefixes commands with the plugin's display name. These commands have no default hotkeys; assign your own in Settings > Hotkeys. The demo is bundled inside `main.js`, so no separate asset installation or plugin data file is required. Its original training text is retained and may describe web-editor tools that are not part of the read-only viewer.
+
 ## Viewing
 
 - **Open in Totonio** (external-link icon) opens `https://totonio.pages.dev/` in your browser. Choose the file in the web app yourself; the button does not send file contents or a vault path.

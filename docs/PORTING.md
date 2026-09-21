@@ -9,6 +9,10 @@ The package/manifest layout, TypeScript strict checking, CommonJS esbuild output
 
 ## Totonio Snapshot
 
+### Bundled Demo
+
+`src/assets/green-tea.json` is an unchanged copy of the supplied `examples/trainings/training-4.totonio`, added on 2026-09-21. It is the version 3 Green Tea training presentation with 30 shapes and eight frames. The JSON extension is only for bundling; no content was converted or migrated. It is imported into `main.js` and parsed through the same strict v3 loader as vault files. A dedicated `ItemView` opens the demo without a backing vault file, external path dependency, or writable plugin data. Its web-editor training instructions are retained as supplied, not exposed as plugin editing controls.
+
 Source: the supplied local `InfiniteCanvas` working tree, inspected on 2026-09-16. Its HEAD at snapshot time was `91bcf7fbeb8194d394ece5b646e0d62ac7ff893f`. The snapshot reflects the supplied working files, not a claim that the tree was pristine.
 
 The checked-in modules under `src/core` are self-contained. Neither installation, build, tests, nor runtime require access to `InfiniteCanvas`. The optional `scripts/port-core.mjs` uses TypeScript's symbol graph to select declarations and their transitive dependencies from a source checkout. It prunes imports and emits only the required local modules. It is not part of normal builds:

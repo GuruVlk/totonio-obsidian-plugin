@@ -4,6 +4,7 @@ import { loadDocument } from '../src/document';
 import { Viewer, showError } from '../src/viewer';
 import { sampleDocument, sampleJson } from './fixture';
 import { renderInfo } from '../src/info';
+import demo from '../src/assets/green-tea.json';
 
 const pane = document.getElementById('pane')!;
 let viewer: Viewer | undefined;
@@ -20,6 +21,7 @@ function mount(json = sampleJson, preview = false): void {
 }
 
 const api = {
+  demo: () => mount(JSON.stringify(demo)),
   info: () => {
     viewer?.dispose();
     viewer = undefined;
