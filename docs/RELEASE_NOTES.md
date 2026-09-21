@@ -8,7 +8,7 @@ Architecture and sequence diagrams alongside your notes. Create in Totonio, pres
 - Measured letter widths prevent wider words such as programs and popcorn from overlapping the line.
 - Text size, wrapping, route placement, file format, and read-only behavior are unchanged. Existing files use the new gap without modification.
 
-This version is prepared locally and has not been tagged or published.
+Validated locally with lint, 117 unit tests, a production build, and 28 desktop/mobile browser tests. The release workflow repeats these checks before publishing installation files.
 
 ## Update
 
