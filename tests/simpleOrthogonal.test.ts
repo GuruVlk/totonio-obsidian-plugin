@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { connectorPathPoints, connectorPoints, roundedRoutePoints } from '../src/core/geometry';
+import { connectorRouteGeometry } from '../src/core/connectorRouting';
 import type { CanvasShape, Point } from '../src/core/types';
 
 const box = (id: string, x: number, y: number): CanvasShape => ({ id, type: 'rect', x, y, width: 100, height: 100, parentId: null, color: '#123456' });
@@ -10,6 +11,17 @@ const line = (patch: Partial<CanvasShape> = {}): CanvasShape => ({ ...box('line'
 const route = (connector: CanvasShape, shapes: CanvasShape[] = []) => connectorPathPoints(connector, [...shapes, connector]);
 
 describe('simple orthogonal routes', () => {
+  it.each([
+    ['fake', 42.22], ['test', 37.6], ['programs', 93.18], ['popcorn', 82.66],
+  ] as const)('matches the web label gap for %s', (label, expectedGap) => {
+    const geometry = connectorRouteGeometry([{ x: 0, y: 0 }, { x: 400, y: 0 }], 'none', 4, label, 20);
+    expect(geometry.shaftParts).toHaveLength(2);
+    expect(geometry.shaftParts[1].start.x - geometry.shaftParts[0].end.x).toBeCloseTo(expectedGap);
+  });
+  it('matches the tight web gap on vertical routes', () => {
+    const geometry = connectorRouteGeometry([{ x: 0, y: 0 }, { x: 0, y: 400 }], 'none', 4, 'test', 20);
+    expect(geometry.shaftParts[1].start.y - geometry.shaftParts[0].end.y).toBeCloseTo(28);
+  });
   it.each([
     [free(200, 100), [{ x: 0, y: 0 }, { x: 200, y: 0 }, { x: 200, y: 100 }]],
     [free(100, 200), [{ x: 0, y: 0 }, { x: 0, y: 200 }, { x: 100, y: 200 }]],

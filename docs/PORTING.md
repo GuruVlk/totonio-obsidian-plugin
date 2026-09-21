@@ -43,6 +43,14 @@ Review any regenerated snapshot as a source update, including its v3-only parser
 
 ## Carefully Ported Behavior
 
+### Connector Label Gaps (0.1.8)
+
+Manually ported from web commit `d17364a` on 2026-09-21. `connectorRouting.ts` uses a 0.1 font-size clearance per side. `connectorLabels.ts` floors the projected gap width at the sum of measured glyph advances from `appearance.ts`, while keeping wrapping, label bounds, and route placement unchanged. The glyph table and its coarse fallback match the web source; this port does not change the viewer's separate shape-text sizing rules.
+
+The numerical expectations in `tests/simpleOrthogonal.test.ts` were cross-checked against the web app's `connectorRouting.test.ts`: at font size 20, fake/test/programs/popcorn have horizontal shaft gaps of 42.22/37.6/93.18/82.66 units; a vertical test label has a 28-unit gap. Web browser checks also verify actual glyph bounds stay inside the gap. Viewer validation: lint, 117 unit tests, production build, and 28 desktop/mobile browser tests pass. The port remains read-only and uses existing document fields; no migration is required.
+
+### Earlier Ports
+
 The `simple-orthogonal` extension to document version 3 was first implemented from a supplied routing specification (2026-09-17) and is now a verbatim port of the web app's `facingCorridorRoute`, `bentSimpleRoute`, `simpleRouteFirstAxis` and `simpleOrthogonalRoutePoints` as inspected on 2026-09-17 and 2026-09-18 (web commits `3ce44b8`, `adfd194` and the single-bend rail commit that followed). `bentSimpleRoute` (0.1.5) is the one-corner case between two attachments: `routeOffset` moves the leg arriving at the end along the first leg's axis and a third leg carries the route back to its end; with no offset the fourth point coincides with the end and the route is the plain corner. Ends that already line up ignore the offset. It uses resolved endpoints and the shared `attachmentSide` classification, meets two facing shape attachments on a rail halfway between their borders, and slides that rail by `routeOffset` clamped so a 12-unit leg (the shared corner clearance) remains on each side. Otherwise each leg takes one bend and the next leg sets off across the direction the previous one arrived from, which is what the web app does; the earlier rule of flipping after every leg is gone. Obstacles are ignored and the 12-unit corner rounding and connector SVG renderer are shared. Line targets do not supply a shape-border side.
 
 `attachmentSide` compares the offsets from the centre normalized by the shape's half-width and half-height, the edge a ray from the centre through the point would hit, so a point far along the long side of a wide shape is classified by that side rather than by the nearer end. This affects both `orthogonal` and `simple-orthogonal` routes and mirrors the web app's fix of the same date. The focused `tests/simpleOrthogonal.test.ts` expectations were cross-checked against the web source.

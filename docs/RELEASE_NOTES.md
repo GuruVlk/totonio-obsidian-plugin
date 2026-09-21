@@ -1,19 +1,18 @@
-# Totonio Presentation 0.1.7
+# Totonio Presentation 0.1.8
 
 Architecture and sequence diagrams alongside your notes. Create in Totonio, present in Obsidian.
 
-## Community and Contact
+## Tighter Connector Labels
 
-- Added community and developer contact links above the support section in the plugin information page and README.
-- [Join the Totonio Discord community](https://discord.com/invite/RTjs438j8) to discuss questions, ideas, and feedback.
-- [Email totonio.app@gmail.com](mailto:totonio.app@gmail.com) to contact the developer directly.
-- Links open only when clicked. The email link opens your mail app; it does not send a message automatically. Diagram rendering, commands, and file access are unchanged.
+- Line and Connector labels now leave a small clearance rather than a large break in the shaft, matching the web editor.
+- Measured letter widths prevent wider words such as programs and popcorn from overlapping the line.
+- Text size, wrapping, route placement, file format, and read-only behavior are unchanged. Existing files use the new gap without modification.
 
-This text/link update was built locally. Automated tests and GitHub CI were intentionally skipped for this release; no new GitHub build-provenance attestation is provided. License notices remain embedded in the bundle.
+This version is prepared locally and has not been tagged or published.
 
 ## Update
 
-In Obsidian, open Settings > Community plugins, check for updates, and update Totonio Presentation to 0.1.7 when available. The plugin does not install or update itself. The Community directory may need time to detect and review this release.
+In Obsidian, open Settings > Community plugins, check for updates, and update Totonio Presentation to 0.1.8 when available. The plugin does not install or update itself. The Community directory may need time to detect and review this release.
 
 ## Included
 
@@ -31,7 +30,7 @@ In Obsidian, open Settings > Community plugins, check for updates, and update To
 - Only `format: "totonio"`, `version: 3`. Legacy `.tatamio` and version 1/2 files are not supported or migrated.
 - This plugin does not edit files, import PlantUML/Mermaid scripts, or provide tag-filter controls. Those authoring workflows belong to the Totonio web app.
 - The handoff to the web editor is manual; there is no automatic file transfer or save-back bridge.
-- Previous releases passed mobile-sized browser tests; tests were not rerun for this text/link update. Native Android/iOS host verification is not yet recorded; see the manual checklist.
+- Native Android/iOS host verification is not yet recorded; see the manual checklist. Browser tests do not replace native host verification.
 
 ## Installation
 

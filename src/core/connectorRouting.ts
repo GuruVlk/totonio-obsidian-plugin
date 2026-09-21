@@ -8,7 +8,7 @@ export type RouteSegment = {
     start: Point;
     end: Point;
 };
-const LABEL_GAP_RATIO = 1;
+const LABEL_GAP_RATIO = 0.1;
 const includesStartArrow = (direction: ArrowDirection | undefined) => direction === 'start' || direction === 'both';
 const includesEndArrow = (direction: ArrowDirection | undefined) => direction === 'end' || direction === 'both';
 const routedArrowhead = (tip: Point, base: Point, halfWidth: number): Arrowhead | null => {

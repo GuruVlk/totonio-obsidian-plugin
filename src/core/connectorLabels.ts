@@ -1,6 +1,6 @@
 import type { Bounds } from './geometry';
 import type { Point } from './types';
-import { labelLines, textWidthUnits } from './appearance';
+import { drawnWidthUnits, labelLines, textWidthUnits } from './appearance';
 export type ConnectorLabelGeometry = {
     center: Point;
     width: number;
@@ -60,7 +60,8 @@ export const connectorLabelGeometry = (start: Point, end: Point, label: string, 
     const rotationRadians = rotation * Math.PI / 180;
     const lineRadians = Math.atan2(deltaY, deltaX);
     const relativeRotation = rotationRadians - lineRadians;
-    const projectedLength = Math.abs(Math.cos(relativeRotation)) * width + Math.abs(Math.sin(relativeRotation)) * height;
+    const gapWidth = Math.max(width, ...lines.map((line) => drawnWidthUnits(line) * fontSize));
+    const projectedLength = Math.abs(Math.cos(relativeRotation)) * gapWidth + Math.abs(Math.sin(relativeRotation)) * height;
     const halfGap = projectedLength / 2 + gapPadding;
     const boundsHalfWidth = Math.abs(Math.cos(rotationRadians)) * width / 2 + Math.abs(Math.sin(rotationRadians)) * height / 2;
     const boundsHalfHeight = Math.abs(Math.sin(rotationRadians)) * width / 2 + Math.abs(Math.cos(rotationRadians)) * height / 2;
