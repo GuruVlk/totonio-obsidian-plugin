@@ -1,18 +1,19 @@
-# Totonio Presentation 0.1.6
+# Totonio Presentation 0.1.7
 
 Architecture and sequence diagrams alongside your notes. Create in Totonio, present in Obsidian.
 
-## Command Palette and Green Tea Demo
+## Community and Contact
 
-- **Totonio Presentation: Open demo graph** opens the bundled Green Tea presentation at Frame 1 of eight, with the existing presentation navigation and glide. Running the command again reveals the existing demo tab.
-- The demo is an unchanged copy of Totonio's `training-4.totonio`, bundled inside the plugin. It works entirely offline and does not create, read, or modify a vault file. Some original training text describes web-editor tools, not plugin editing capabilities.
-- **Totonio Presentation: Open web editor** opens `https://totonio.pages.dev/` in your browser without sending any diagram contents or vault path.
-- Find the commands in Obsidian's Command Palette or assign your own hotkeys. No default keyboard shortcuts are added.
-- Existing version 3 file compatibility, connector routing, Markdown embeds, and read-only behavior are unchanged. The demo requires no extra installation assets.
+- Added community and developer contact links above the support section in the plugin information page and README.
+- [Join the Totonio Discord community](https://discord.com/invite/RTjs438j8) to discuss questions, ideas, and feedback.
+- [Email totonio.app@gmail.com](mailto:totonio.app@gmail.com) to contact the developer directly.
+- Links open only when clicked. The email link opens your mail app; it does not send a message automatically. Diagram rendering, commands, and file access are unchanged.
+
+This text/link update was built locally. Automated tests and GitHub CI were intentionally skipped for this release; no new GitHub build-provenance attestation is provided. License notices remain embedded in the bundle.
 
 ## Update
 
-In Obsidian, open Settings > Community plugins, check for updates, and update Totonio Presentation to 0.1.6 when available. The plugin does not install or update itself. The Community directory may need time to detect and review this release.
+In Obsidian, open Settings > Community plugins, check for updates, and update Totonio Presentation to 0.1.7 when available. The plugin does not install or update itself. The Community directory may need time to detect and review this release.
 
 ## Included
 
@@ -30,7 +31,7 @@ In Obsidian, open Settings > Community plugins, check for updates, and update To
 - Only `format: "totonio"`, `version: 3`. Legacy `.tatamio` and version 1/2 files are not supported or migrated.
 - This plugin does not edit files, import PlantUML/Mermaid scripts, or provide tag-filter controls. Those authoring workflows belong to the Totonio web app.
 - The handoff to the web editor is manual; there is no automatic file transfer or save-back bridge.
-- Mobile-sized browser tests pass. Native Android/iOS host verification is not yet recorded; see the manual checklist.
+- Previous releases passed mobile-sized browser tests; tests were not rerun for this text/link update. Native Android/iOS host verification is not yet recorded; see the manual checklist.
 
 ## Installation
 
