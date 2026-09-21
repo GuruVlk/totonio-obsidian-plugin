@@ -36,6 +36,13 @@ Open **Settings > Totonio Presentation** (or the plugin's gear icon) for the inf
 
 ![Totonio tanuki painting a diagram](src/assets/tanuki.webp)
 
+## Community and Contact
+
+Have a question, an idea, or feedback? Join the community on Discord or contact the developer by email.
+
+- [Join the Totonio Discord community](https://discord.com/invite/RTjs438j8)
+- [Email: totonio.app@gmail.com](mailto:totonio.app@gmail.com)
+
 **Support Totonio:** [Buy me a coffee](https://www.buymeacoffee.com/vladimirplk). The information page includes a coffee-support bar; it opens the external site only when clicked.
 
 ## Build and Install
@@ -62,6 +69,8 @@ The repository directory can have any name. The plugin installation directory an
 No account or payment is required to use the viewer. It makes no background network requests, contains no telemetry, and reads only files in your vault through Obsidian's Vault API. Diagram files are never uploaded or modified by the plugin.
 
 The optional **Open in Totonio** button opens `https://totonio.pages.dev/` in your browser without sending the file or its path. The information page also includes a static **Buy me a coffee** link to `https://www.buymeacoffee.com/vladimirplk`. These sites are contacted by your browser only after you choose their links; no remote widgets, scripts, or images are embedded. The web app and support site operate outside the plugin.
+
+The Discord community link opens `https://discord.com/invite/RTjs438j8` only when clicked. The email link opens your mail app addressed to `totonio.app@gmail.com`; it does not send a message automatically.
 
 ## Command Palette
 

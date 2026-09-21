@@ -82,6 +82,17 @@ export function renderInfo(container: HTMLElement, version: string, heading: Inf
   element(page, 'p', 'Use Open in Totonio in the viewer toolbar to open the website in your browser, then select your vault file there. The button does not send your diagram or its path. Save edits back to the same location; if your browser downloads a copy, replace the original manually. The Obsidian viewer refreshes when the source changes.');
   element(page, 'p', 'Only format "totonio", version 3 is supported. Legacy versions 1/2 and .tatamio files are not migrated. Invalid files show an error in the pane. There are no editing tools, exports, telemetry, or background network requests.');
 
+  const contact = element(page, 'section');
+  element(contact, 'strong', 'Community and contact');
+  element(contact, 'p', 'Have a question, an idea, or feedback? Join the community on Discord or contact the developer by email.');
+  const contacts = element(contact, 'ul');
+  const discord = element(element(contacts, 'li'), 'a', 'Join the Totonio Discord community');
+  discord.href = 'https://discord.com/invite/RTjs438j8';
+  discord.target = '_blank';
+  discord.rel = 'noopener noreferrer';
+  const email = element(element(contacts, 'li'), 'a', 'Email: totonio.app@gmail.com');
+  email.href = 'mailto:totonio.app@gmail.com';
+
   const support = element(page, 'footer', undefined, 'totonio-info-support');
   const copy = element(support, 'div');
   element(copy, 'strong', 'Support Totonio');
@@ -95,5 +106,5 @@ export function renderInfo(container: HTMLElement, version: string, heading: Inf
     'stroke-width': 2, 'stroke-linecap': 'round', 'stroke-linejoin': 'round', 'aria-hidden': 'true' });
   for (const [tag, attributes] of Coffee) svgElement(icon, tag as keyof SVGElementTagNameMap, attributes);
   element(link, 'span', 'Buy me a coffee');
-  element(page, 'p', 'Website and support links open external pages only when you choose them. Viewing diagrams and this information page needs no connection.', 'totonio-info-meta');
+  element(page, 'p', 'Website, community, and support links open external pages only when you choose them. The email link opens your mail app. Viewing diagrams and this information page needs no connection.', 'totonio-info-meta');
 }
