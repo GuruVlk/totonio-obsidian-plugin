@@ -232,6 +232,8 @@ test('glide can be interrupted, disabled, and cancelled by resize or reduced mot
   await page.clock.runFor(100);
   await page.evaluate(() => { document.getElementById('pane')!.style.cssText = 'width:280px;height:420px'; });
   await page.clock.runFor(100);
+  await expect(page.locator('.totonio-svg')).toHaveAttribute('viewBox', '0 0 280 380');
+  await expect(scene).toHaveAttribute('transform', 'translate(32 127.6) scale(0.24)');
   const resized = await scene.getAttribute('transform');
   await page.clock.runFor(1000);
   expect(await scene.getAttribute('transform')).toBe(resized);

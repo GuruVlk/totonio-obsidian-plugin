@@ -1,18 +1,22 @@
-# Totonio Presentation 0.1.8
+# Totonio Presentation 0.1.9
 
 Architecture and sequence diagrams alongside your notes. Create in Totonio, present in Obsidian.
 
-## Tighter Connector Labels
+## Focus with Document Tags
 
-- Line and Connector labels now leave a small clearance rather than a large break in the shaft, matching the web editor.
-- Measured letter widths prevent wider words such as programs and popcorn from overlapping the line.
-- Text size, wrapping, route placement, file format, and read-only behavior are unchanged. Existing files use the new gap without modification.
+- The new **Filter by tag** toolbar menu lists existing document tags with counts, **Untagged**, and **Clear**.
+- Select one or more tags to highlight matching objects. Non-matching shapes and connector labels fade to 16% opacity without changing diagram geometry or routes.
+- **Keep untagged children** includes descendants of matching tagged containers/groups. **Keep untagged linking connectors** retains untagged connectors joining matching objects. Both options are enabled by default, matching Totonio's web viewer behavior.
+- Filters work alongside frame navigation and glide. Escape closes the menu before exiting presentation. The menu supports keyboard navigation and scrolling in narrow panes.
+- Each viewer keeps its own filter in memory. Same-file refreshes retain valid selections and drop missing tags; switching files or closing the view resets them.
+- Static Markdown previews remain unfiltered, and **Fit content** still fits the whole diagram. No tags, vault files, or plugin settings are written.
+- Existing connector-label improvements, Green Tea demo, Command Palette actions, and presentation controls are preserved.
 
-Validated locally with lint, 117 unit tests, a production build, and 28 desktop/mobile browser tests. The release workflow repeats these checks before publishing installation files.
+The release workflow runs lint, unit/integration tests, browser tests, and build verification before publishing the three installation files with GitHub provenance attestations.
 
 ## Update
 
-In Obsidian, open Settings > Community plugins, check for updates, and update Totonio Presentation to 0.1.8 when available. The plugin does not install or update itself. The Community directory may need time to detect and review this release.
+In Obsidian, open Settings > Community plugins, check for updates, and update Totonio Presentation to 0.1.9 when available. The plugin does not install or update itself. The Community directory may need time to detect and review this release.
 
 ## Included
 
@@ -28,9 +32,9 @@ In Obsidian, open Settings > Community plugins, check for updates, and update To
 
 - Obsidian 1.12.7 or newer.
 - Only `format: "totonio"`, `version: 3`. Legacy `.tatamio` and version 1/2 files are not supported or migrated.
-- This plugin does not edit files, import PlantUML/Mermaid scripts, or provide tag-filter controls. Those authoring workflows belong to the Totonio web app.
+- This plugin filters existing document tags but does not edit tags or integrate them with Obsidian note tags. File editing and PlantUML/Mermaid script import remain web-app workflows.
 - The handoff to the web editor is manual; there is no automatic file transfer or save-back bridge.
-- Native Android/iOS host verification is not yet recorded; see the manual checklist. Browser tests do not replace native host verification.
+- Native Android/iOS host verification is not yet recorded; browser tests do not replace native host verification. See the manual checklist.
 
 ## Installation
 

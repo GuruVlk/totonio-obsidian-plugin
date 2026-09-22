@@ -32,8 +32,6 @@ For example: generate an API sequence from a script in Totonio, tag its objects 
 
 ## Plugin Information
 
-Version 0.1.8 matches the web editor's tighter connector label gaps. Measured glyph advances protect wider words from touching the shaft; label wrapping and route placement remain unchanged. See [release notes](docs/RELEASE_NOTES.md).
-
 Open **Settings > Totonio Presentation** (or the plugin's gear icon) for the information page, getting-started guide, Markdown embed syntax, and compatibility notes. The welcome mascot and a screenshot of the plugin's actual diagram viewer are bundled locally; no extra installation files or network connection are needed.
 
 ![Totonio tanuki painting a diagram](src/assets/tanuki.webp)
