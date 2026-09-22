@@ -7,6 +7,96 @@ test.beforeEach(async ({ page }) => {
   await expect(page.locator('.totonio-frame-status')).toContainText('1 / 2');
 });
 
+test('tag filtering fades objects and connector labels while preserving the scene and frames', async ({ page, context }, info) => {
+  await context.setOffline(true);
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.evaluate(() => {
+    const sample = window.harness.sampleDocument;
+    window.harness.mount(JSON.stringify({ ...sample, shapes: sample.shapes.map((shape) => ({ ...shape,
+      tags: shape.id === 'container' || shape.id === 'decision' ? ['Current State'] : shape.id === 'notes' ? ['Future State'] : undefined,
+    })) }));
+    Reflect.set(window, 'originalFilteredNode', document.querySelector('[data-shape-id="notes"]'));
+  });
+  const menu = page.getByRole('dialog', { name: 'Filter by tag' });
+  const trigger = page.getByRole('button', { name: 'Filter by tag', exact: true });
+  await trigger.click();
+  await expect(menu).toBeVisible();
+  await expect(menu.getByLabel('Tag: Current State', { exact: true })).toBeFocused();
+  await expect(menu.locator('.totonio-tag-row:has(input[aria-label="Tag: Current State"]) .totonio-tag-count')).toHaveText('2');
+  const before = await page.evaluate(() => window.harness.view);
+  await menu.getByLabel('Tag: Current State', { exact: true }).check();
+  await expect(page.locator('[data-shape-id="notes"]')).toHaveCSS('opacity', '0.16');
+  await expect(page.locator('[data-shape-id="start"]')).toHaveCSS('opacity', '1');
+  await expect(page.locator('[data-shape-id="route-1"]')).toHaveCSS('opacity', '1');
+  await expect(page.locator('[data-label-for="route-1"]')).toHaveCSS('opacity', '1');
+  await menu.getByLabel('Keep untagged children', { exact: true }).uncheck();
+  await expect(page.locator('[data-shape-id="start"]')).toHaveCSS('opacity', '0.16');
+  await expect(page.locator('[data-shape-id="route-1"]')).toHaveCSS('opacity', '0.16');
+  await expect(page.locator('[data-label-for="route-1"]')).toHaveCSS('opacity', '0.16');
+  expect(await page.evaluate(() => window.harness.view)).toEqual(before);
+  await page.keyboard.press('PageDown');
+  await expect(page.locator('.totonio-frame-status')).toContainText('1 / 2');
+  await menu.getByLabel('Tag: Future State', { exact: true }).check();
+  await expect(page.locator('[data-shape-id="notes"]')).toHaveCSS('opacity', '1');
+  await page.screenshot({ path: info.outputPath('tag-filter.png') });
+  await page.keyboard.press('Escape');
+  await expect(menu).toBeHidden();
+  await expect(trigger).toBeFocused();
+  await expect(page.locator('.totonio-frame-status')).toContainText('1 / 2');
+  await page.keyboard.press('PageDown');
+  await expect(page.locator('.totonio-frame-status')).toContainText('2 / 2');
+  await expect(page.locator('[data-shape-id="start"]')).toHaveCSS('opacity', '0.16');
+  await page.keyboard.press('Escape');
+  await expect(page.locator('.totonio-frame-status')).toHaveText('Free view');
+  await page.getByRole('button', { name: 'Fit content', exact: true }).click();
+  expect(await page.evaluate(() => document.querySelector('[data-shape-id="notes"]') === Reflect.get(window, 'originalFilteredNode'))).toBe(true);
+  await trigger.click();
+  await menu.getByRole('button', { name: 'Clear tag filter' }).click();
+  await expect(page.locator('.totonio-filtered-out')).toHaveCount(0);
+  await expect(menu.getByRole('button', { name: 'Clear tag filter' })).toBeDisabled();
+  await page.locator('.totonio-surface').click({ position: { x: 10, y: 10 } });
+  await expect(menu).toBeHidden();
+  await page.evaluate(() => window.harness.mount(window.harness.sampleJson, true));
+  await expect(trigger).toHaveCount(0);
+  await expect(page.locator('.totonio-filtered-out')).toHaveCount(0);
+});
+
+test('tag menu handles narrow panes, long names, keyboard focus, and untagged documents', async ({ page }) => {
+  await page.evaluate(() => {
+    const sample = window.harness.sampleDocument;
+    window.harness.mount(JSON.stringify({ ...sample, shapes: sample.shapes.map((shape, index) => ({ ...shape,
+      tags: index < 20 ? [`LongDocumentTagWithoutSpaces${index}`] : undefined,
+    })) }));
+    document.getElementById('pane')!.style.cssText = 'width:280px;height:320px';
+  });
+  const trigger = page.getByRole('button', { name: 'Filter by tag', exact: true });
+  await trigger.focus();
+  await page.keyboard.press('Enter');
+  const menu = page.getByRole('dialog', { name: 'Filter by tag' });
+  await expect(menu).toBeVisible();
+  expect(await menu.evaluate((element) => {
+    const box = element.getBoundingClientRect();
+    const root = element.closest('.totonio-viewer')!.getBoundingClientRect();
+    return box.left >= root.left && box.right <= root.right && box.bottom <= root.bottom && element.scrollWidth <= element.clientWidth;
+  })).toBe(true);
+  expect(await page.locator('.totonio-toolbar').evaluate((element) => element.scrollWidth <= element.clientWidth)).toBe(true);
+  await page.keyboard.press('Space');
+  await expect(menu.getByRole('checkbox').first()).toBeChecked();
+  const last = menu.getByLabel('Keep untagged linking connectors', { exact: true });
+  await last.focus();
+  await page.keyboard.press('Tab');
+  await expect(menu.getByRole('button', { name: 'Clear tag filter' })).toBeFocused();
+  await page.keyboard.press('Shift+Tab');
+  await expect(last).toBeFocused();
+  await page.keyboard.press('Escape');
+  await expect(trigger).toBeFocused();
+  await page.evaluate(() => window.harness.mount(window.harness.sampleJson));
+  await trigger.click();
+  await expect(menu).toContainText('This document has no tags.');
+  await menu.getByLabel('Untagged objects', { exact: true }).check();
+  await expect(page.locator('.totonio-filtered-out')).toHaveCount(0);
+});
+
 test('bundled Green Tea demo renders eight frames and images entirely offline', async ({ page, context }, info) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await context.setOffline(true);

@@ -4,12 +4,14 @@ import { loadDocument } from './document';
 import { Viewer, showError } from './viewer';
 import { TotonioInfoTab } from './settings';
 import { DEMO_VIEW_TYPE, TotonioDemoView } from './demo';
+import type { TagFilter } from './core/tags';
 
 export const VIEW_TYPE = 'totonio-presentation';
 
 export class TotonioView extends FileView {
   private viewer?: Viewer;
   private generation = 0;
+  private reloadFilter?: { file: TFile; filter?: TagFilter };
 
   constructor(leaf: WorkspaceLeaf) {
     super(leaf);
@@ -26,13 +28,15 @@ export class TotonioView extends FileView {
   canAcceptExtension(extension: string): boolean { return extension.toLowerCase() === 'totonio'; }
 
   async onLoadFile(file: TFile): Promise<void> {
+    const tagFilter = this.reloadFilter?.file === file ? this.viewer?.tagFilter ?? this.reloadFilter.filter : undefined;
     this.clear();
+    this.reloadFilter = { file, filter: tagFilter };
     const generation = this.generation;
     try {
       const json = await this.app.vault.read(file);
       if (generation !== this.generation) return;
       const document = loadDocument(json, file.path);
-      this.viewer = new Viewer(this.contentEl, document, { title: file.basename });
+      this.viewer = new Viewer(this.contentEl, document, { title: file.basename, tagFilter });
     } catch (error) {
       if (generation === this.generation) showError(this.contentEl, error);
     }
@@ -43,6 +47,7 @@ export class TotonioView extends FileView {
 
   clear(): void {
     this.generation++;
+    this.reloadFilter = undefined;
     this.viewer?.dispose();
     this.viewer = undefined;
     this.contentEl.replaceChildren();

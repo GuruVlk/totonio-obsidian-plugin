@@ -88,6 +88,38 @@ function createHost() {
 beforeEach(() => { document.body.replaceChildren(); });
 
 describe('read-only Obsidian integration', () => {
+  it('retains and reconciles tag filters on reload but never across different files', async () => {
+    const { app, file, vault, write } = createHost();
+    const value = JSON.parse(sampleJson) as { shapes: Array<{ id: string; tags?: string[] }> };
+    value.shapes.find((shape) => shape.id === 'start')!.tags = ['Topic'];
+    vault.read.mockResolvedValue(JSON.stringify(value));
+    const view = new TotonioView({ app } as unknown as WorkspaceLeaf);
+    await view.onLoadFile(file);
+    const select = () => {
+      const input = view.contentEl.querySelector<HTMLInputElement>('[aria-label="Tag: Topic"]')!;
+      input.checked = true;
+      input.dispatchEvent(new Event('change', { bubbles: true }));
+    };
+    select();
+    await view.onLoadFile(file);
+    expect(view.contentEl.querySelector<HTMLInputElement>('[aria-label="Tag: Topic"]')!.checked).toBe(true);
+    vault.read.mockResolvedValue('{');
+    await view.onLoadFile(file);
+    vault.read.mockResolvedValue(JSON.stringify(value));
+    await view.onLoadFile(file);
+    expect(view.contentEl.querySelector<HTMLInputElement>('[aria-label="Tag: Topic"]')!.checked).toBe(true);
+    vault.read.mockResolvedValue(sampleJson);
+    await view.onLoadFile(file);
+    expect(view.contentEl.querySelectorAll('.totonio-filtered-out')).toHaveLength(0);
+    vault.read.mockResolvedValue(JSON.stringify(value));
+    await view.onLoadFile(file);
+    select();
+    const other = new host.TFile('other.totonio') as unknown as import('obsidian').TFile;
+    await view.onLoadFile(other);
+    expect(view.contentEl.querySelector<HTMLInputElement>('[aria-label="Tag: Topic"]')!.checked).toBe(false);
+    await view.onUnloadFile();
+    expect(write).not.toHaveBeenCalled();
+  });
   it('registers commands and opens the bundled eight-frame demo without vault access', async () => {
     const { app, vault, write, workspace, leaf } = createHost();
     const plugin = new TotonioPlugin(app, {} as never);

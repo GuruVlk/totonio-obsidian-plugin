@@ -39,3 +39,20 @@
 .totonio-coffee-link svg { flex: 0 0 20px; }
 .totonio-info .totonio-coffee-link:hover { background: #f6cf35; color: #252421; }
 .totonio-coffee-link:focus-visible { outline: 2px solid var(--interactive-accent); outline-offset: 3px; }
+
+.totonio-viewer { position: relative; }
+.totonio-svg .totonio-filtered-out { opacity: 0.16; }
+.totonio-tag-trigger { position: relative; }
+.totonio-toolbar .totonio-tag-trigger.is-filter-active { color: var(--text-on-accent); background: var(--interactive-accent); }
+.totonio-tag-badge { position: absolute; inset-block-start: -3px; inset-inline-end: -3px; min-width: 14px; padding: 0 2px; border-radius: 4px; font-size: 10px; line-height: 14px; background: var(--interactive-accent); color: var(--text-on-accent); }
+.totonio-tag-panel { position: absolute; z-index: 5; inset-block-start: 44px; inset-inline-end: 8px; width: min(300px, calc(100% - 16px)); max-height: calc(100% - 52px); overflow: auto; overscroll-behavior: contain; box-sizing: border-box; padding: 12px; border: 1px solid var(--background-modifier-border); border-radius: 6px; background: var(--background-primary); color: var(--text-normal); box-shadow: var(--shadow-s); font-size: var(--font-ui-small, 13px); }
+.totonio-viewer .totonio-tag-panel[hidden], .totonio-viewer .totonio-tag-panel [hidden], .totonio-tag-trigger [hidden] { display: none; }
+.totonio-tag-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 8px; }
+.totonio-tag-header button { font-size: inherit; }
+.totonio-tag-row { display: flex; align-items: center; gap: 8px; min-height: 32px; padding: 5px 4px; cursor: pointer; border-radius: 4px; }
+.totonio-tag-row:hover { background: var(--background-modifier-hover); }
+.totonio-tag-row input { flex: 0 0 auto; margin: 0; }
+.totonio-tag-name { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.totonio-tag-count { color: var(--text-muted); font-variant-numeric: tabular-nums; flex: 0 0 auto; }
+.totonio-tag-options { margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--background-modifier-border); }
+.totonio-tag-summary { margin-top: 8px; color: var(--text-muted); }

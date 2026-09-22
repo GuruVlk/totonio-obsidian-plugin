@@ -20,13 +20,13 @@ The [Totonio web app](https://totonio.pages.dev/) is the authoring companion. Th
 | Workflow | In the Totonio web app | In this Obsidian plugin |
 | --- | --- | --- |
 | Present a diagram | Create and order Presentation Frames; present frames or explore the canvas. | Play saved frames with previous/next navigation, fit-to-pane, and outside-frame dimming; explore in free view. |
-| Organize with tags | Tag shapes and connectors, search tags, and filter/highlight parts of a diagram. | Open the saved diagram without changing its tags. No tag-filter UI or integration with Obsidian note tags. |
+| Organize with tags | Create/edit tags on shapes and connectors, search tags, and filter/highlight parts of a diagram. | Filter by existing document tags without editing them. No integration with Obsidian note tags. |
 | PlantUML and Mermaid sequences | Use **Import > Sequence from script** to turn supported sequence syntax into editable Totonio objects. | View the generated objects after saving as a version 3 `.totonio` file. No direct `.puml` or Mermaid code-block import. |
 | Edit and arrange | Create shapes, nested containers, connectors, labels, and embedded images. | Inspect their saved appearance and hierarchy in a read-only view. |
 
 **Sequence syntax is a supported subset, not full PlantUML or Mermaid compatibility.** The generator reads participant declarations/aliases, messages, replies, self-messages, and notes. Grouping such as `alt`/`loop`, activation, and other unsupported constructs are not rendered by the generator. This is not a general importer for every diagram type in either language.
 
-For example: generate an API sequence from a script in Totonio, tag its objects by subsystem, create frames for a walkthrough, then save the v3 file in your vault and embed it in your architecture note. Web-app tag-filter state is not saved or reproduced by the plugin.
+For example: generate an API sequence from a script in Totonio, tag its objects by subsystem, create frames for a walkthrough, then save the v3 file in your vault and embed it in your architecture note. The plugin reads those tags and lets you choose a filter independently; the web app's current filter selection is not transferred.
 
 **The handoff is manual today.** Open in Totonio launches the website only; select the vault file there yourself. Save edits back to that file, or replace it with the browser's downloaded copy. There is no automatic file transfer or save-back bridge.
 
@@ -95,7 +95,18 @@ Obsidian prefixes commands with the plugin's display name. These commands have n
 - In free view, drag to pan and use the wheel or pinch to zoom. Shift+wheel pans. Reset view restores the saved viewport; Fit content fits visible diagram content, including overflowing descendants and connector labels.
 - Touch supports one-finger pan and two-finger pinch in free view. Keyboard navigation is scoped to the focused viewer, not the rest of Obsidian.
 
-The plugin has no selection, edit handles, editor panels, menus, drag/drop import, undo history, export, or save actions. Geometry and viewport changes exist only in memory. It uses `Vault.read`, never a vault write API, and does not use browser storage or persist plugin settings. It refreshes a view when the source is changed by something else.
+The plugin has no selection, edit handles, editor panels or editor menus, drag/drop import, undo history, export, or save actions. Geometry and viewport changes exist only in memory. It uses `Vault.read`, never a vault write API, and does not use browser storage or persist plugin settings. It refreshes a view when the source is changed by something else.
+
+## Tag Filters
+
+The **Filter by tag** toolbar button opens a menu of existing document tags and direct tag counts, plus **Untagged** and **Clear**. Select multiple tags to match any of them (case-insensitively). Non-matching shapes and connector labels remain visible at 16% opacity, preserving diagram context and routes.
+
+Both options are enabled by default, matching Totonio's behavior:
+
+- **Keep untagged children:** include all descendants of matching tagged containers/groups, including descendants carrying other tags.
+- **Keep untagged linking connectors:** retain untagged connectors whose two attached endpoints match. Tagged connectors follow their own tags unless already included by container inheritance.
+
+Selections are independent per viewer, in memory only. They survive an external refresh of the same file, with missing tags removed, but reset on switching files or closing the view. No tag editing, file writes, or saved plugin preferences are involved. Escape closes the filter menu first; a second Escape exits frame playback. Tag filtering works with presentation frames and glide without changing frame order. **Fit content** still fits all content. Markdown previews remain static and unfiltered.
 
 ## Markdown Embeds
 

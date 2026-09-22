@@ -3,8 +3,10 @@ import { Presentation } from './presentation';
 import { renderDiagram, svgElement } from './render';
 import type { CanvasState, Point, View } from './core/types';
 import { interpolateView, VIEW_TWEEN_MS } from './viewTween';
+import { TagFilterMenu } from './tagFilter';
+import type { TagFilter } from './core/tags';
 
-type Options = { preview?: boolean; title?: string; open?: () => void };
+type Options = { preview?: boolean; title?: string; open?: () => void; tagFilter?: TagFilter };
 type Icon = typeof ChevronLeft;
 
 export function showError(container: HTMLElement, error: unknown): void {
@@ -37,6 +39,11 @@ export class Viewer {
   private readonly motionPreference?: MediaQueryList;
   private lastSize = { width: 0, height: 0 };
   private disposed = false;
+  private tagMenu?: TagFilterMenu;
+  private tagMatches: Set<string> | null = null;
+  private filterNodes: Array<{ element: Element; id: string }> = [];
+
+  get tagFilter(): TagFilter | undefined { return this.tagMenu?.state; }
 
   constructor(container: HTMLElement, document: CanvasState, private readonly options: Options = {}) {
     const dom = container.ownerDocument;
@@ -127,6 +134,10 @@ export class Viewer {
       this.root.ownerDocument.defaultView?.open('https://totonio.pages.dev/', '_blank', 'noopener,noreferrer');
     });
     website.title = 'Open Totonio in your browser (select the file there)';
+    this.tagMenu = new TagFilterMenu(this.root, toolbar, this.presentation.document.shapes, (matches) => {
+      this.tagMatches = matches;
+      this.applyTagFilter();
+    }, this.options.tagFilter);
     this.frameControls.push(previous, next, exit);
     this.freeControls.push(play, reset, fit);
     if (!this.presentation.frames.length) play.remove();
@@ -172,6 +183,10 @@ export class Viewer {
     this.listen(this.root, 'keydown', (event) => {
       const key = event as KeyboardEvent;
       if (key.ctrlKey || key.metaKey || key.altKey || key.shiftKey) return;
+      if (this.tagMenu?.isOpen) {
+        if (key.key === 'Escape') { key.preventDefault(); key.stopPropagation(); this.tagMenu.close(); }
+        return;
+      }
       if (['ArrowRight', 'PageDown', 'ArrowLeft', 'PageUp'].includes(key.key) && this.presentation.frames.length) {
         key.preventDefault(); key.stopPropagation();
         this.stepFrame(key.key === 'ArrowRight' || key.key === 'PageDown' ? 1 : -1);
@@ -242,7 +257,13 @@ export class Viewer {
     const view = this.displayedView;
     this.scene.setAttribute('transform', `translate(${view.x} ${view.y}) scale(${view.zoom})`);
     if (view.zoom !== this.lastZoom) {
-      if (!this.zoomDiagram) this.zoomDiagram = renderDiagram(this.scene, this.presentation.document.shapes, view.zoom);
+      if (!this.zoomDiagram) {
+        this.zoomDiagram = renderDiagram(this.scene, this.presentation.document.shapes, view.zoom);
+        this.filterNodes = [...this.scene.querySelectorAll('[data-shape-id], [data-label-for]')].map((element) => ({
+          element, id: element.getAttribute('data-shape-id') ?? element.getAttribute('data-label-for')!,
+        }));
+        this.applyTagFilter();
+      }
       else this.zoomDiagram(view.zoom);
       this.lastZoom = view.zoom;
     }
@@ -275,9 +296,14 @@ export class Viewer {
     if (this.disposed) return;
     this.disposed = true;
     this.cancelGlide();
+    this.tagMenu?.dispose();
     for (const cleanup of this.cleanups.splice(0)) cleanup();
     for (const id of this.pointers.keys()) if (this.surface.hasPointerCapture(id)) this.surface.releasePointerCapture(id);
     this.pointers.clear();
     this.root.remove();
+  }
+
+  private applyTagFilter(): void {
+    for (const { element, id } of this.filterNodes) element.classList.toggle('totonio-filtered-out', this.tagMatches !== null && !this.tagMatches.has(id));
   }
 }

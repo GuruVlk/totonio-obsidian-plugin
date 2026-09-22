@@ -39,9 +39,13 @@ Review any regenerated snapshot as a source update, including its v3-only parser
 | `canvas/connectorLabels.ts` | Label bounds, wrapping, position and rotation along connector routes. |
 | `canvas/arrowheads.ts` | Arrow geometry, including short segments and start/end/both directions. |
 | `canvas/model.ts` | WeakMap-backed ID/child lookup only; no editor state operations. |
-| `canvas/colors.ts`, `canvas/tags.ts` | Color validation and tag normalization dependencies of the document parser. |
+| `canvas/colors.ts`, `canvas/tags.ts` | Color validation, tag normalization, case-insensitive tag counts and read-only matching. |
 
 ## Carefully Ported Behavior
+
+The tag menu ports `canvas/tags.ts`, `hooks/useTagFilter.ts`, and `panels/TagFilterMenu.tsx` behavior inspected on 2026-09-22. Multiple tags use OR matching; tagged matches inherit all descendants by default, and untagged `line` connectors between matched attachments are included by default. Untagged selection alone does not inherit tagged children. The filter uses 0.16 opacity, matching Totonio's `.is-filtered-out` rule. The Obsidian adapter uses native checkboxes, pane-bounded scrolling, and owning-document event handlers; connector labels receive the same fade as their shafts and arrowheads. Filtering changes classes on existing SVG elements and never alters routing or frame order.
+
+Filter state lives only in each viewer. Same-file reloads reconcile against available tags; different files, closed tabs, and static previews do not share selections. The matcher guards against duplicate descendant visits, and reload reconciliation is plugin-specific. `src/core/tags.ts` now includes these manually ported exports in addition to parser helpers; review/preserve them when rerunning the optional snapshot script, which was originally rooted only in parsing and rendering.
 
 ### Connector Label Gaps (0.1.8)
 

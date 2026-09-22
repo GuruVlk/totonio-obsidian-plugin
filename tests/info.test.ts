@@ -39,7 +39,8 @@ it('distinguishes web authoring capabilities from read-only plugin features', ()
   expect(web.textContent).toContain('not to the read-only Obsidian plugin');
   expect(web.textContent).toContain('Web presentations');
   expect(web.textContent).toContain('Object tags');
-  expect(web.textContent).toContain('does not provide tag filtering');
+  expect(web.textContent).toContain('Filter by tag');
+  expect(web.textContent).toContain('These are not Obsidian note tags');
   expect(web.textContent).toContain('PlantUML and Mermaid');
   expect(web.textContent).toContain('supports a subset');
   expect(web.textContent).toContain('does not import scripts');

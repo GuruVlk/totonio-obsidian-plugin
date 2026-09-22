@@ -56,7 +56,7 @@ export function renderInfo(container: HTMLElement, version: string, heading: Inf
   element(web, 'p', 'The web app is the authoring companion. The features below belong to Totonio on the web, not to the read-only Obsidian plugin.');
   const features = element(web, 'ul');
   element(features, 'li', 'Web presentations: create and order Presentation Frames, present a guided walkthrough, or explore the whole canvas. Saved frames can also be played inside Obsidian.');
-  element(features, 'li', 'Object tags: tag shapes and connectors, search by tag, and filter or highlight parts of your diagram in the web app. This plugin does not provide tag filtering or connect these tags to Obsidian note tags.');
+  element(features, 'li', 'Object tags: create and edit tags on shapes and connectors in the web app. In this viewer, use Filter by tag to focus on existing document tags without changing them. These are not Obsidian note tags.');
   element(features, 'li', 'PlantUML and Mermaid sequences: use Import > Sequence from script to generate editable Totonio objects from supported participant, message, reply, self-message, and note syntax. Save the result as a version 3 .totonio file to view it here.');
   element(web, 'p', 'Sequence import supports a subset of PlantUML and Mermaid, not every diagram type or language feature. Constructs such as alt/loop grouping and activation are not rendered by the generator. The plugin does not import scripts or render Mermaid code blocks.');
   const website = element(web, 'a', 'Open the Totonio web app');
@@ -71,6 +71,7 @@ export function renderInfo(container: HTMLElement, version: string, heading: Inf
   element(steps, 'li', 'Use the previous/next buttons, Left/Right, or Page Up/Page Down to navigate frames. Focus the viewer first.');
   element(steps, 'li', 'Press Escape for free view. Drag to pan and scroll or pinch to zoom. Reset view restores the saved viewport; Fit content shows the whole diagram.');
   element(page, 'p', 'Diagrams without frames open at their saved viewport. Resizing the pane refits the active frame.');
+  element(page, 'p', 'Filter by tag lists existing document tags and counts, with Untagged and Clear. Multiple tags match any selected tag; other objects fade to 16% opacity. Keep untagged children includes descendants of matching containers, and Keep untagged linking connectors retains untagged connectors joining matches. Filters stay in this viewer only, survive same-file refreshes, and are cleared when the view closes. Markdown previews remain unfiltered; Fit content still fits the whole diagram.');
   element(page, 'p', 'Frame navigation uses the same 840 ms glide as Totonio: gently eased movement and geometric zoom. Use the wind-icon Glide between frames toggle for instant transitions. Reduce Motion in your system settings disables glide automatically. The toggle applies only to the current view and is not saved.');
 
   heading(page, 'Embed in a note');
