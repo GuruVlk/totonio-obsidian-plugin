@@ -5,6 +5,7 @@ import { loadDocument } from '../src/document';
 import { sampleJson } from './fixture';
 import { interpolateView } from '../src/viewTween';
 import type { View } from '../src/core/types';
+import { contentBounds, fitBounds } from '../src/presentation';
 
 let viewer: Viewer;
 let now = 0;
@@ -157,5 +158,54 @@ it('keeps static previews and frameless documents free of animation controls', (
   viewer = new Viewer(document.body, state);
   expect(viewer.root.querySelector('[aria-label="Glide between frames"]')).toBeNull();
   expect(callbacks.size).toBe(0);
-  expect(scene().getAttribute('transform')).toBe(targetTransform(state.view));
+  expect(scene().getAttribute('transform')).toBe(targetTransform(fitBounds(contentBounds(state.shapes)!, { width, height: 560 })));
+});
+
+it('fits frameless content once, preserves manual navigation on resize, and resets to saved view', () => {
+  viewer.dispose();
+  const state = loadDocument(sampleJson, 'sample.totonio');
+  state.shapes = state.shapes.filter((shape) => shape.type !== 'frame');
+  const original = JSON.stringify(state);
+  viewer = new Viewer(document.body, state);
+  const fitted = { ...viewer.presentation.view };
+  click('Fit content');
+  expect(viewer.presentation.view).toEqual(fitted);
+  viewer.presentation.pan({ x: 80, y: 40 });
+  const panned = { ...viewer.presentation.view };
+  width = 450;
+  viewer.resize();
+  expect(viewer.presentation.view).toEqual(panned);
+  click('Reset view');
+  expect(viewer.presentation.view).toEqual(state.view);
+  viewer.resize();
+  expect(viewer.presentation.view).toEqual(state.view);
+  expect(JSON.stringify(state)).toBe(original);
+});
+
+it('defers initial fit until a hidden pane has a usable size', () => {
+  viewer.dispose();
+  const state = loadDocument(sampleJson, 'sample.totonio');
+  state.shapes = state.shapes.filter((shape) => shape.type !== 'frame');
+  width = 0;
+  viewer = new Viewer(document.body, state);
+  expect(viewer.presentation.view).toEqual(state.view);
+  width = 600;
+  viewer.resize();
+  expect(viewer.presentation.view).toEqual(fitBounds(contentBounds(state.shapes)!, { width, height: 560 }));
+});
+
+it.each([-100, 100])('doubles trackpad pinch sensitivity at delta %s while keeping wheel zoom and anchor unchanged', (deltaY) => {
+  click('Free view');
+  const saved = { ...viewer.presentation.view };
+  const point = { x: 240, y: 180 };
+  const surface = viewer.root.querySelector('.totonio-surface')!;
+  surface.dispatchEvent(new WheelEvent('wheel', { deltaY, clientX: point.x, clientY: point.y, cancelable: true }));
+  const wheelZoom = viewer.presentation.view.zoom;
+  expect(wheelZoom).toBeCloseTo(saved.zoom * Math.exp(-deltaY * 0.002));
+  click('Reset view');
+  surface.dispatchEvent(new WheelEvent('wheel', { deltaY, ctrlKey: true, clientX: point.x, clientY: point.y, cancelable: true }));
+  const pinch = viewer.presentation.view;
+  expect(pinch.zoom).toBeCloseTo(saved.zoom * (wheelZoom / saved.zoom) ** 2);
+  expect((point.x - pinch.x) / pinch.zoom).toBeCloseTo((point.x - saved.x) / saved.zoom);
+  expect((point.y - pinch.y) / pinch.zoom).toBeCloseTo((point.y - saved.y) / saved.zoom);
 });

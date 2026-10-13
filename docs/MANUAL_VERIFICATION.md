@@ -26,9 +26,10 @@ Use a disposable vault and a built plugin. These application-host checks remain 
 
 ## Free View and Resize
 
-- [ ] Open `examples/Free-view.totonio`. It starts at the saved viewport `{ x: 38, y: 54, zoom: 0.72 }` rather than fitting all content.
+- [ ] Open `examples/Free-view.totonio`. It automatically fits all content, matching Fit content. Reset view restores the saved viewport `{ x: 38, y: 54, zoom: 0.72 }`. Opening in an initially hidden tab fits when the pane becomes visible.
 - [ ] Drag to pan. Zoom with the mouse wheel, trackpad pinch, and touch pinch where available. Shift+wheel pans.
 - [ ] Reset view returns to the saved viewport. Fit content includes all visible content and labels.
+- [ ] On a MacBook trackpad, pinch in and out in free view. Zoom should respond at twice the previous sensitivity while retaining the point beneath the cursor. Ordinary wheel zoom and Shift+wheel pan should be unchanged.
 - [ ] Resize the workspace pane, split it horizontally/vertically, collapse/reopen sidebars, and move the tab between panes. Frames refit; free view retains its current viewport.
 - [ ] Test a narrow mobile-sized pane and a pop-out window. Controls must fit, pointer coordinates must remain correct, and no blank scene or stale observer should appear.
 - [ ] Verify both Obsidian light and dark themes: theme-native controls, original Totonio diagram colors, readable text.

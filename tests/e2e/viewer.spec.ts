@@ -359,23 +359,46 @@ test('navigates with buttons and scoped keyboard keys then restores saved viewpo
   await expect(page.locator('.totonio-frame-status')).toContainText('1 / 2');
 });
 
-test('opens frameless files at saved viewport and supports pan, zoom, reset, and fit', async ({ page }) => {
+test('opens frameless files fitted and supports pan, zoom, reset, and fit', async ({ page }) => {
   await page.evaluate(() => {
     const sample = window.harness.sampleDocument;
     window.harness.mount(JSON.stringify({ ...sample, shapes: sample.shapes.filter((shape) => shape.type !== 'frame') }));
   });
-  expect(await page.evaluate(() => window.harness.view)).toEqual({ x: 38, y: 54, zoom: 0.72 });
+  const fitted = await page.evaluate(() => window.harness.view!);
+  expect(fitted).not.toEqual({ x: 38, y: 54, zoom: 0.72 });
+  await page.getByRole('button', { name: 'Fit content' }).click();
+  expect(await page.evaluate(() => window.harness.view)).toEqual(fitted);
   await page.mouse.move(140, 240);
   await page.mouse.down();
   await page.mouse.move(190, 290, { steps: 5 });
   await page.mouse.up();
-  expect(await page.evaluate(() => window.harness.view)).toEqual({ x: 88, y: 104, zoom: 0.72 });
+  expect(await page.evaluate(() => window.harness.view)).toEqual({ x: fitted.x + 50, y: fitted.y + 50, zoom: fitted.zoom });
   await page.mouse.wheel(0, -180);
-  await expect.poll(() => page.evaluate(() => window.harness.view!.zoom)).toBeGreaterThan(0.72);
+  await expect.poll(() => page.evaluate(() => window.harness.view!.zoom)).toBeGreaterThan(fitted.zoom);
   await page.getByRole('button', { name: 'Reset view' }).click();
   expect(await page.evaluate(() => window.harness.view)).toEqual({ x: 38, y: 54, zoom: 0.72 });
   await page.getByRole('button', { name: 'Fit content' }).click();
-  expect(await page.evaluate(() => window.harness.view!.zoom)).not.toBe(0.72);
+  expect(await page.evaluate(() => window.harness.view)).toEqual(fitted);
+});
+
+test('trackpad pinch zoom uses twice the wheel sensitivity and stays cursor-anchored', async ({ page }) => {
+  await page.getByRole('button', { name: 'Free view', exact: true }).click();
+  const baseline = await page.evaluate(() => window.harness.view!);
+  const surface = page.locator('.totonio-surface');
+  const bounds = (await surface.boundingBox())!;
+  const point = { x: 150, y: 180 };
+  for (const deltaY of [-100, 100]) {
+    await page.getByRole('button', { name: 'Reset view' }).click();
+    await surface.dispatchEvent('wheel', { deltaY, clientX: bounds.x + point.x, clientY: bounds.y + point.y });
+    const wheel = await page.evaluate(() => window.harness.view!);
+    expect(wheel.zoom).toBeCloseTo(baseline.zoom * Math.exp(-deltaY * 0.002));
+    await page.getByRole('button', { name: 'Reset view' }).click();
+    await surface.dispatchEvent('wheel', { deltaY, ctrlKey: true, clientX: bounds.x + point.x, clientY: bounds.y + point.y });
+    const pinch = await page.evaluate(() => window.harness.view!);
+    expect(pinch.zoom).toBeCloseTo(baseline.zoom * (wheel.zoom / baseline.zoom) ** 2);
+    expect((point.x - pinch.x) / pinch.zoom).toBeCloseTo((point.x - baseline.x) / baseline.zoom);
+    expect((point.y - pinch.y) / pinch.zoom).toBeCloseTo((point.y - baseline.y) / baseline.zoom);
+  }
 });
 
 test('refits frames on pane resize and keeps controls inside the toolbar', async ({ page }) => {

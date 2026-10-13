@@ -78,11 +78,12 @@ Fit content follows the visual-bounds principle in `canvas/fitSelection.ts`: exc
 - Parser format/version checks accept only `totonio`/3. Serialization, legacy format names, border migration, edit signatures, document storage keys, and document-writing helpers are absent.
 - The plugin adds extension checks, explicit errors, bounded input/reference limits, and rejects cyclic connector dependencies or parents that cannot contain children.
 - Frame viewports use the actual pane's measured size, not `window.innerWidth/innerHeight`. Padding is 32px (shrinking in tiny panes), with no source 0.2 minimum-zoom clamp that would clip large frames.
-- Saved frame geometry is trusted; editor frame auto-resize/auto-nesting/auto-fit operations never run. A document with no frames starts at its exact saved viewport.
+- Saved frame geometry is trusted; editor frame auto-resize/auto-nesting/auto-fit operations never run. A document with no frames now fits content on opening once the pane has a usable size. Reset retains the original saved viewport; subsequent free-view resizes do not refit.
 - Rendering uses DOM construction and `textContent`, not string-injected SVG/HTML. Data URLs are admitted only by the original embedded-image validator. SVG assets stay in browser-isolated image contexts. Label links are inert.
 - Presentation has no grid, edit hit targets, selection/resize/rotation handles, ports, diff overlays, menus, document tabs, Properties/Structure panels, drag/drop, editor shortcuts, storage, export, or save lifecycle.
 - Theme-native controls surround the original light diagram palette. Only installed local fonts are used, so glyph metrics can differ by platform just as with Totonio's browser fallbacks.
-- Markdown previews are static and independently sized. Frameless previews fit content; full tabs retain the saved viewport. Each preview owns and disposes its own resize observer and handlers.
+- Markdown previews are static and independently sized. Frameless previews refit when resized; full tabs fit only on opening and then preserve manual navigation. Each preview owns and disposes its own resize observer and handlers.
+- Chromium trackpad pinch events are Ctrl-modified wheel events. Their exponential zoom coefficient is 0.004, twice the ordinary wheel coefficient of 0.002, with the existing delta clamp, zoom limits, and cursor anchor preserved. Touch-pointer pinch gestures are unchanged.
 
 ## Information Page Artwork
 

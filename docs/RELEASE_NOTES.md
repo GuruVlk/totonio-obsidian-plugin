@@ -1,22 +1,21 @@
-# Totonio Presentation 0.1.9
+# Totonio Presentation 0.1.10
 
 Architecture and sequence diagrams alongside your notes. Create in Totonio, present in Obsidian.
 
-## Focus with Document Tags
+## Automatic Fit and Faster Pinch Zoom
 
-- The new **Filter by tag** toolbar menu lists existing document tags with counts, **Untagged**, and **Clear**.
-- Select one or more tags to highlight matching objects. Non-matching shapes and connector labels fade to 16% opacity without changing diagram geometry or routes.
-- **Keep untagged children** includes descendants of matching tagged containers/groups. **Keep untagged linking connectors** retains untagged connectors joining matching objects. Both options are enabled by default, matching Totonio's web viewer behavior.
-- Filters work alongside frame navigation and glide. Escape closes the menu before exiting presentation. The menu supports keyboard navigation and scrolling in narrow panes.
-- Each viewer keeps its own filter in memory. Same-file refreshes retain valid selections and drop missing tags; switching files or closing the view resets them.
-- Static Markdown previews remain unfiltered, and **Fit content** still fits the whole diagram. No tags, vault files, or plugin settings are written.
-- Existing connector-label improvements, Green Tea demo, Command Palette actions, and presentation controls are preserved.
+- Diagrams without Presentation Frames now automatically fit the whole diagram on opening, using the same calculation as **Fit content**.
+- Initially hidden panes defer that first fit until they have a usable size. Later free-view resizes preserve manual pan and zoom; empty diagrams retain their saved viewport.
+- **Reset view** still restores the document's saved viewport. Documents with frames still start at Frame 1, fitted to the pane.
+- Trackpad pinch zoom, including MacBook trackpads, now uses twice the previous sensitivity in both directions while preserving the point under the cursor and existing zoom limits.
+- Ordinary wheel zoom, Shift+wheel pan, and touch-screen pinch sensitivity are unchanged.
+- Presentation glide, tag filtering, Markdown previews, the Green Tea demo, and read-only file handling are preserved. No document or format changes are required.
 
 The release workflow runs lint, unit/integration tests, browser tests, and build verification before publishing the three installation files with GitHub provenance attestations.
 
 ## Update
 
-In Obsidian, open Settings > Community plugins, check for updates, and update Totonio Presentation to 0.1.9 when available. The plugin does not install or update itself. The Community directory may need time to detect and review this release.
+In Obsidian, open Settings > Community plugins, check for updates, and update Totonio Presentation to 0.1.10 when available. The plugin does not install or update itself. The Community directory may need time to detect and review this release.
 
 ## Included
 

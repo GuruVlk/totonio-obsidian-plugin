@@ -89,8 +89,9 @@ Obsidian prefixes commands with the plugin's display name. These commands have n
 - Frame navigation uses Totonio's exact 840 ms glide: cubic ease-in/ease-out movement and geometric zoom interpolation. The wind-icon **Glide between frames** toggle switches to instant transitions for the current view. Your system's Reduce Motion preference disables glide automatically.
 - Rapid navigation redirects the glide from the currently displayed camera position. Escape and closing the view cancel it; a pane resize immediately refits the target frame. Initial opening and static Markdown previews remain instantly fitted. The glide toggle is kept in memory only.
 - Escape or the Free view button stops playback and restores the parked free-view viewport. Start frames begins playback again.
-- Frameless documents open at their exact saved `viewport`, not an automatically fitted view.
+- Frameless documents automatically fit the whole diagram on opening, using the same calculation as **Fit content**. Hidden panes fit once they have a usable size; subsequent resizes preserve your pan/zoom. Empty documents retain their saved viewport.
 - In free view, drag to pan and use the wheel or pinch to zoom. Shift+wheel pans. Reset view restores the saved viewport; Fit content fits visible diagram content, including overflowing descendants and connector labels.
+- Trackpad pinch gestures (including MacBook trackpads) use twice the previous zoom sensitivity. Ordinary wheel zoom and touch-screen pinch sensitivity are unchanged.
 - Touch supports one-finger pan and two-finger pinch in free view. Keyboard navigation is scoped to the focused viewer, not the rest of Obsidian.
 
 The plugin has no selection, edit handles, editor panels or editor menus, drag/drop import, undo history, export, or save actions. Geometry and viewport changes exist only in memory. It uses `Vault.read`, never a vault write API, and does not use browser storage or persist plugin settings. It refreshes a view when the source is changed by something else.

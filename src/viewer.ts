@@ -39,6 +39,7 @@ export class Viewer {
   private readonly motionPreference?: MediaQueryList;
   private lastSize = { width: 0, height: 0 };
   private disposed = false;
+  private initialFitPending = true;
   private tagMenu?: TagFilterMenu;
   private tagMatches: Set<string> | null = null;
   private filterNodes: Array<{ element: Element; id: string }> = [];
@@ -233,7 +234,7 @@ export class Viewer {
       if (this.presentation.activeFrame) return;
       const multiplier = wheel.deltaMode === 1 ? 16 : wheel.deltaMode === 2 ? this.size().height : 1;
       if (wheel.shiftKey) this.presentation.pan({ x: -wheel.deltaX * multiplier, y: -wheel.deltaY * multiplier });
-      else this.presentation.zoomAt(this.point(wheel), Math.exp(-Math.max(-500, Math.min(500, wheel.deltaY * multiplier)) * 0.002));
+      else this.presentation.zoomAt(this.point(wheel), Math.exp(-Math.max(-500, Math.min(500, wheel.deltaY * multiplier)) * (wheel.ctrlKey ? 0.004 : 0.002)));
       this.update();
     }, { passive: false });
     for (const type of ['dragstart', 'dragover', 'drop', 'contextmenu']) this.listen(this.surface, type, (event) => event.preventDefault());
@@ -245,7 +246,11 @@ export class Viewer {
     if (size.width !== this.lastSize.width || size.height !== this.lastSize.height) this.cancelGlide();
     this.lastSize = size;
     this.presentation.resize(size);
-    if (this.options.preview && !this.presentation.frames.length) this.presentation.fitContent();
+    const bounds = this.surface.getBoundingClientRect();
+    if (bounds.width > 0 && bounds.height > 0) {
+      if (!this.presentation.frames.length && (this.options.preview || this.initialFitPending)) this.presentation.fitContent();
+      this.initialFitPending = false;
+    }
     this.svg.setAttribute('viewBox', `0 0 ${size.width} ${size.height}`);
     this.update();
   }
