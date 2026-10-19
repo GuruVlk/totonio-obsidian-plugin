@@ -19,7 +19,7 @@ export const normalizeTags = (values: string[]) => dedupe(values.map(normalizeTa
 export type TagFilter = { tags: string[]; untagged: boolean; bridgeConnectors: boolean; inheritChildren: boolean };
 export type TagSummary = { tag: string; count: number };
 
-export const emptyTagFilter = (): TagFilter => ({ tags: [], untagged: false, bridgeConnectors: true, inheritChildren: true });
+export const emptyTagFilter = (): TagFilter => ({ tags: [], untagged: false, bridgeConnectors: false, inheritChildren: false });
 export const sameTag = (first: string, second: string): boolean => first.toLocaleLowerCase() === second.toLocaleLowerCase();
 export const isTagFilterActive = (filter: TagFilter): boolean => filter.tags.length > 0 || filter.untagged;
 

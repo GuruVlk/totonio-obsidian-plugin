@@ -35,9 +35,16 @@ describe('tag filter viewer integration', () => {
     const node = viewer.root.querySelector('[data-shape-id="future"]');
     toggle(viewer, 'Tag: Current State', true);
     expect(faded(viewer, 'future')).toBe(true);
+    const childOption = viewer.root.querySelector<HTMLInputElement>('.totonio-tag-options label:first-child input')!;
+    const bridgeOption = viewer.root.querySelector<HTMLInputElement>('.totonio-tag-options label:last-child input')!;
+    expect(childOption.checked).toBe(false);
+    expect(bridgeOption.checked).toBe(false);
+    expect(faded(viewer, 'child')).toBe(true);
+    expect(faded(viewer, 'bridge')).toBe(true);
+    childOption.click();
+    bridgeOption.click();
     expect(faded(viewer, 'child')).toBe(false);
     expect(faded(viewer, 'bridge')).toBe(false);
-    const bridgeOption = viewer.root.querySelector<HTMLInputElement>('.totonio-tag-options label:last-child input')!;
     bridgeOption.click();
     expect(faded(viewer, 'bridge')).toBe(true);
     expect(viewer.root.querySelector('[data-label-for="bridge"]')!.classList.contains('totonio-filtered-out')).toBe(true);
@@ -59,6 +66,7 @@ describe('tag filter viewer integration', () => {
     expect(first.tagFilter!.tags).not.toContain('not real');
     first.root.querySelector<HTMLButtonElement>('[aria-label="Clear tag filter"]')!.click();
     expect(first.tagFilter).toEqual(emptyTagFilter());
+    expect([...first.root.querySelectorAll<HTMLInputElement>('.totonio-tag-options input')].map((input) => input.checked)).toEqual([false, false]);
     expect(first.root.querySelectorAll('.totonio-filtered-out')).toHaveLength(0);
   });
   it('closes the menu before Escape exits presentation and scopes other navigation keys', () => {

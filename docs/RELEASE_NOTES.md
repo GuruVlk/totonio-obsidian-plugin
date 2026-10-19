@@ -1,21 +1,19 @@
-# Totonio Presentation 0.1.10
+# Totonio Presentation 0.1.11
 
 Architecture and sequence diagrams alongside your notes. Create in Totonio, present in Obsidian.
 
-## Automatic Fit and Faster Pinch Zoom
+## Unchecked Tag Filter Options
 
-- Diagrams without Presentation Frames now automatically fit the whole diagram on opening, using the same calculation as **Fit content**.
-- Initially hidden panes defer that first fit until they have a usable size. Later free-view resizes preserve manual pan and zoom; empty diagrams retain their saved viewport.
-- **Reset view** still restores the document's saved viewport. Documents with frames still start at Frame 1, fitted to the pane.
-- Trackpad pinch zoom, including MacBook trackpads, now uses twice the previous sensitivity in both directions while preserving the point under the cursor and existing zoom limits.
-- Ordinary wheel zoom, Shift+wheel pan, and touch-screen pinch sensitivity are unchanged.
-- Presentation glide, tag filtering, Markdown previews, the Green Tea demo, and read-only file handling are preserved. No document or format changes are required.
+- **Keep untagged children** and **Keep untagged linking connectors** now start unchecked in each viewer.
+- Selecting tags highlights only matching objects by default. Enable either option to include descendants of matching containers or untagged connectors linking matches.
+- **Clear** resets both options to unchecked. Filters remain local to each viewer and survive same-file refreshes.
+- Automatic fit, pinch zoom, presentation glide, Markdown previews, the Green Tea demo, and read-only file handling are unchanged. No document or format changes are required.
 
 The release workflow runs lint, unit/integration tests, browser tests, and build verification before publishing the three installation files with GitHub provenance attestations.
 
 ## Update
 
-In Obsidian, open Settings > Community plugins, check for updates, and update Totonio Presentation to 0.1.10 when available. The plugin does not install or update itself. The Community directory may need time to detect and review this release.
+In Obsidian, open Settings > Community plugins, check for updates, and update Totonio Presentation to 0.1.11 when available. The plugin does not install or update itself. The Community directory may need time to detect and review this release.
 
 ## Included
 

@@ -26,9 +26,17 @@ test('tag filtering fades objects and connector labels while preserving the scen
   const before = await page.evaluate(() => window.harness.view);
   await menu.getByLabel('Tag: Current State', { exact: true }).check();
   await expect(page.locator('[data-shape-id="notes"]')).toHaveCSS('opacity', '0.16');
+  await expect(menu.getByLabel('Keep untagged children', { exact: true })).not.toBeChecked();
+  await expect(menu.getByLabel('Keep untagged linking connectors', { exact: true })).not.toBeChecked();
+  await expect(page.locator('[data-shape-id="start"]')).toHaveCSS('opacity', '0.16');
+  await expect(page.locator('[data-shape-id="route-1"]')).toHaveCSS('opacity', '0.16');
+  await expect(page.locator('[data-label-for="route-1"]')).toHaveCSS('opacity', '0.16');
+  await menu.getByLabel('Keep untagged children', { exact: true }).check();
   await expect(page.locator('[data-shape-id="start"]')).toHaveCSS('opacity', '1');
+  await menu.getByLabel('Keep untagged linking connectors', { exact: true }).check();
   await expect(page.locator('[data-shape-id="route-1"]')).toHaveCSS('opacity', '1');
   await expect(page.locator('[data-label-for="route-1"]')).toHaveCSS('opacity', '1');
+  await menu.getByLabel('Keep untagged linking connectors', { exact: true }).uncheck();
   await menu.getByLabel('Keep untagged children', { exact: true }).uncheck();
   await expect(page.locator('[data-shape-id="start"]')).toHaveCSS('opacity', '0.16');
   await expect(page.locator('[data-shape-id="route-1"]')).toHaveCSS('opacity', '0.16');

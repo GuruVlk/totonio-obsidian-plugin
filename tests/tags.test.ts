@@ -19,11 +19,15 @@ describe('read-only tag matching', () => {
     expect(untaggedCount(shapes)).toBe(3);
     expect(tagFilterMatchIds(shapes, emptyTagFilter())).toBeNull();
   });
-  it('includes descendants and untagged linking connectors by default, without mutation', () => {
+  it('matches only tagged objects by default, without mutation', () => {
     const before = JSON.stringify(shapes);
     expect(tagFilterMatchIds(shapes, { ...emptyTagFilter(), tags: ['CURRENT STATE'] }))
-      .toEqual(new Set(['container', 'child', 'grandchild', 'peer', 'bridge']));
+      .toEqual(new Set(['container', 'peer']));
     expect(JSON.stringify(shapes)).toBe(before);
+  });
+  it('includes descendants and untagged linking connectors when enabled', () => {
+    expect(tagFilterMatchIds(shapes, { ...emptyTagFilter(), tags: ['CURRENT STATE'], inheritChildren: true, bridgeConnectors: true }))
+      .toEqual(new Set(['container', 'child', 'grandchild', 'peer', 'bridge']));
   });
   it('supports strict matching and OR selection', () => {
     expect(tagFilterMatchIds(shapes, { ...emptyTagFilter(), tags: ['current state', 'Future State'], inheritChildren: false, bridgeConnectors: false }))
@@ -33,7 +37,7 @@ describe('read-only tag matching', () => {
     expect(tagFilterMatchIds(shapes, { ...emptyTagFilter(), untagged: true }))
       .toEqual(new Set(['child', 'bridge', 'free-link']));
     const matches = tagFilterMatchIds(shapes, { ...emptyTagFilter(), tags: ['current state'], untagged: true });
-    expect(matches?.has('grandchild')).toBe(true);
+    expect(matches?.has('grandchild')).toBe(false);
     expect(matches?.has('tagged-link')).toBe(false);
   });
   it('preserves valid selections and drops removed tags after a document reload', () => {
@@ -45,7 +49,7 @@ describe('read-only tag matching', () => {
   it('handles groups, empty documents, and tagged frames without changing frame order', () => {
     const scene: CanvasShape[] = [{ ...box('group', ['Topic']), type: 'group' }, box('nested', undefined, 'group'),
       { ...box('frame', ['Topic']), type: 'frame', frameOrder: 7 }];
-    expect(tagFilterMatchIds(scene, { ...emptyTagFilter(), tags: ['Topic'] })).toEqual(new Set(['group', 'nested', 'frame']));
+    expect(tagFilterMatchIds(scene, { ...emptyTagFilter(), tags: ['Topic'], inheritChildren: true })).toEqual(new Set(['group', 'nested', 'frame']));
     expect(scene[2].frameOrder).toBe(7);
     expect(tagFilterMatchIds([], { ...emptyTagFilter(), tags: ['Topic'] })).toEqual(new Set());
   });
