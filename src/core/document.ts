@@ -20,6 +20,7 @@ type DocumentShape = {
     type: ShapeType;
     name?: string;
     tags?: string[];
+    ignoreTagFilter?: boolean;
     x: number;
     y: number;
     width: number;
@@ -262,6 +263,10 @@ const parseShape = (value: unknown): DocumentShape | null => {
         shape.tags = parseTags(value.tags);
     if (value.tags !== undefined && shape.tags === undefined)
         return null;
+    if (value.ignoreTagFilter !== undefined && typeof value.ignoreTagFilter !== 'boolean')
+        return null;
+    if (value.ignoreTagFilter === true)
+        shape.ignoreTagFilter = true;
     if (value.imageData !== undefined && isEmbeddedImageData(value.imageData))
         shape.imageData = value.imageData;
     if (value.imageAssetId !== undefined && typeof value.imageAssetId === 'string')

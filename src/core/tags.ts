@@ -48,6 +48,7 @@ export function tagFilterMatchIds(shapes: CanvasShape[], filter: TagFilter): Set
         if (filter.tags.some((tag) => shape.tags?.some((value) => sameTag(value, tag)))) inherit(shape);
     }
     if (filter.untagged) for (const shape of shapes) if (!shape.tags?.length) matched.add(shape.id);
+    for (const shape of shapes) if (shape.ignoreTagFilter) matched.add(shape.id);
     if (filter.bridgeConnectors) for (const shape of shapes) {
         if (shape.type !== 'line' || matched.has(shape.id) || shape.tags?.length) continue;
         if ([shape.start, shape.end].every((endpoint) => endpoint?.type === 'shape' && matched.has(endpoint.shapeId))) matched.add(shape.id);

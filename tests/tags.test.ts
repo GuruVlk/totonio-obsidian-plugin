@@ -53,4 +53,10 @@ describe('read-only tag matching', () => {
     expect(scene[2].frameOrder).toBe(7);
     expect(tagFilterMatchIds([], { ...emptyTagFilter(), tags: ['Topic'] })).toEqual(new Set());
   });
+  it('always shows an object that ignores the filter, but not its children', () => {
+    const scene: CanvasShape[] = [{ ...box('title'), type: 'text', ignoreTagFilter: true },
+      { ...box('background', ['Other']), type: 'panel', ignoreTagFilter: true }, box('inside', undefined, 'background'), box('api', ['Topic'])];
+    expect(tagFilterMatchIds(scene, { ...emptyTagFilter(), tags: ['Topic'], inheritChildren: true })).toEqual(new Set(['title', 'background', 'api']));
+    expect(tagFilterMatchIds(scene, { ...emptyTagFilter(), tags: ['Missing'] })).toEqual(new Set(['title', 'background']));
+  });
 });

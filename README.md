@@ -100,10 +100,12 @@ The plugin has no selection, edit handles, editor panels or editor menus, drag/d
 
 The **Filter by tag** toolbar button opens a menu of existing document tags and direct tag counts, plus **Untagged** and **Clear**. Select multiple tags to match any of them (case-insensitively). Non-matching shapes and connector labels remain visible at 16% opacity, preserving diagram context and routes.
 
-Both options are enabled by default, matching Totonio's behavior:
+Both options start unchecked, matching Totonio's behavior:
 
 - **Keep untagged children:** include all descendants of matching tagged containers/groups, including descendants carrying other tags.
 - **Keep untagged linking connectors:** retain untagged connectors whose two attached endpoints match. Tagged connectors follow their own tags unless already included by container inheritance.
+
+Objects marked **Always visible** in Totonio (saved as `ignoreTagFilter`) stay at full strength under every filter, so titles and backgrounds keep their context. The mark covers that object only, not its children.
 
 Selections are independent per viewer, in memory only. They survive an external refresh of the same file, with missing tags removed, but reset on switching files or closing the view. No tag editing, file writes, or saved plugin preferences are involved. Escape closes the filter menu first; a second Escape exits frame playback. Tag filtering works with presentation frames and glide without changing frame order. **Fit content** still fits all content. Markdown previews remain static and unfiltered.
 

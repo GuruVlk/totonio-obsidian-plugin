@@ -56,6 +56,11 @@ describe('structural validation', () => {
     const state = load({ shapes: [{ ...shape, type: 'group' }, { ...shape, id: 'child', parentId: 'box' }] });
     expect(state.shapes[1]).toMatchObject({ parentId: 'box', x: 10, y: 20 });
   });
+  it('reads an object that ignores the tag filter and rejects a non-boolean flag', () => {
+    expect(load({ shapes: [{ ...shape, ignoreTagFilter: true }] }).shapes[0].ignoreTagFilter).toBe(true);
+    expect(load({ shapes: [{ ...shape, ignoreTagFilter: false }] }).shapes[0].ignoreTagFilter).toBeUndefined();
+    expect(() => load({ shapes: [{ ...shape, ignoreTagFilter: 'yes' }] })).toThrow('malformed');
+  });
   it.each([
     { shapes: [{}] }, { shapes: [shape, shape] }, { assets: null }, { shapes: [{ ...shape, parentId: 'missing' }] },
     { shapes: [{ ...shape, parentId: 'box' }] }, { shapes: [{ ...shape, type: 'unknown' }] },

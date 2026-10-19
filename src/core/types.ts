@@ -46,6 +46,7 @@ export type CanvasShape = {
     type: ShapeType;
     name?: string;
     tags?: string[];
+    ignoreTagFilter?: boolean;
     x: number;
     y: number;
     width: number;

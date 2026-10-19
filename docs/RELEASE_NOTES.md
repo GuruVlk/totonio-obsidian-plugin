@@ -1,19 +1,19 @@
-# Totonio Presentation 0.1.11
+# Totonio Presentation 0.1.12
 
 Architecture and sequence diagrams alongside your notes. Create in Totonio, present in Obsidian.
 
-## Unchecked Tag Filter Options
+## Always Visible Objects
 
-- **Keep untagged children** and **Keep untagged linking connectors** now start unchecked in each viewer.
-- Selecting tags highlights only matching objects by default. Enable either option to include descendants of matching containers or untagged connectors linking matches.
-- **Clear** resets both options to unchecked. Filters remain local to each viewer and survive same-file refreshes.
-- Automatic fit, pinch zoom, presentation glide, Markdown previews, the Green Tea demo, and read-only file handling are unchanged. No document or format changes are required.
+- Objects marked **Always visible** in Totonio stay at full strength under every tag filter, so titles, backgrounds and legends keep the diagram readable while you highlight one part of it.
+- The mark belongs to that object only; what stands inside it is still filtered by its own tags.
+- Files without the mark are unchanged, and older plugin versions still open marked files, fading those objects as before.
+- Automatic fit, pinch zoom, presentation glide, Markdown previews, the Green Tea demo, unchecked filter options and read-only file handling are unchanged.
 
 The release workflow runs lint, unit/integration tests, browser tests, and build verification before publishing the three installation files with GitHub provenance attestations.
 
 ## Update
 
-In Obsidian, open Settings > Community plugins, check for updates, and update Totonio Presentation to 0.1.11 when available. The plugin does not install or update itself. The Community directory may need time to detect and review this release.
+In Obsidian, open Settings > Community plugins, check for updates, and update Totonio Presentation to 0.1.12 when available. The plugin does not install or update itself. The Community directory may need time to detect and review this release.
 
 ## Included
 
