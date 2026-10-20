@@ -1,4 +1,4 @@
-import { ChevronLeft, ChevronRight, ExternalLink, Maximize, Minimize, Play, RotateCcw, Wind } from 'lucide';
+import { ChevronLeft, ChevronRight, ExternalLink, Maximize, Minimize, Play, RotateCcw, Spotlight, Wind } from 'lucide';
 import { Presentation } from './presentation';
 import { renderDiagram, svgElement } from './render';
 import type { CanvasState, Point, View } from './core/types';
@@ -36,6 +36,8 @@ export class Viewer {
   private animation?: { from: View; to: View; started: number };
   private glideEnabled = true;
   private glideButton?: HTMLButtonElement;
+  private dimEnabled = true;
+  private dimButton?: HTMLButtonElement;
   private readonly motionPreference?: MediaQueryList;
   private lastSize = { width: 0, height: 0 };
   private disposed = false;
@@ -126,6 +128,7 @@ export class Viewer {
     const reset = button('Reset view', RotateCcw, () => this.presentation.reset());
     const fit = button('Fit content', Maximize, () => this.presentation.fitContent());
     if (this.presentation.frames.length) {
+      this.dimButton = button('Dim the canvas around the active frame', Spotlight, () => { this.dimEnabled = !this.dimEnabled; });
       this.glideButton = button('Glide between frames', Wind, () => {
         this.glideEnabled = !this.glideEnabled;
         if (!this.glideEnabled) this.cancelGlide();
@@ -277,8 +280,9 @@ export class Viewer {
       this.glideButton.setAttribute('aria-pressed', String(this.glideEnabled && !this.motionPreference?.matches));
       this.glideButton.title = this.motionPreference?.matches ? 'Glide disabled by reduced motion preference' : 'Glide between frames';
     }
+    this.dimButton?.setAttribute('aria-pressed', String(this.dimEnabled));
     this.root.classList.toggle('is-frame', Boolean(activeFrame));
-    this.dim.style.display = activeFrame ? '' : 'none';
+    this.dim.style.display = activeFrame && this.dimEnabled ? '' : 'none';
     if (activeFrame) {
       const size = this.size();
       const left = view.x + Math.min(activeFrame.x, activeFrame.x + activeFrame.width) * view.zoom;

@@ -85,7 +85,7 @@ Obsidian prefixes commands with the plugin's display name. These commands have n
 
 - **Open in Totonio** (external-link icon) opens `https://totonio.pages.dev/` in your browser. Choose the file in the web app yourself; the button does not send file contents or a vault path.
 - Documents with frames start at the first frame in ascending `frameOrder`. Equal orders preserve document order. Previous/next buttons and Left/Right or Page Up/Page Down step through frames, wrapping at either end.
-- The active frame is fitted to the actual pane with 32px padding; content outside it is dimmed. Pane resizing refits that frame.
+- The active frame is fitted to the actual pane with 32px padding; content outside it is dimmed. Pane resizing refits that frame. The spotlight-icon **Dim the canvas around the active frame** toggle turns the dimming off and on for the current view.
 - Frame navigation uses Totonio's exact 840 ms glide: cubic ease-in/ease-out movement and geometric zoom interpolation. The wind-icon **Glide between frames** toggle switches to instant transitions for the current view. Your system's Reduce Motion preference disables glide automatically.
 - Rapid navigation redirects the glide from the currently displayed camera position. Escape and closing the view cancel it; a pane resize immediately refits the target frame. Initial opening and static Markdown previews remain instantly fitted. The glide toggle is kept in memory only.
 - Escape or the Free view button stops playback and restores the parked free-view viewport. Start frames begins playback again.

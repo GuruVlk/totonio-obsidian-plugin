@@ -16,6 +16,7 @@ Use a disposable vault and a built plugin. These application-host checks remain 
 - [ ] Confirm the first displayed frame is System overview even though the second frame appears earlier in the JSON array.
 - [ ] Confirm shapes, nested containers, text, header/body formatting, fills, borders, icons, images, connector labels, shafts, and arrowheads are visible.
 - [ ] Confirm the area outside the active frame is dimmed and frame editing outlines are absent.
+- [ ] Turn the spotlight-icon dim toggle off and on while a frame is active; the surroundings should switch between full view and dimmed without leaving the frame.
 - [ ] Navigate with previous/next buttons; test wrapping from first to last and last to first.
 - [ ] Confirm frame changes use Totonio's 840 ms glide. Test rapid next/previous presses mid-transition, transitions between differently sized frames, and the wind-icon toggle for instant changes.
 - [ ] Enable system Reduce Motion before opening the viewer and while a glide is running. Navigation should be instant and the glide toggle disabled. Disable Reduce Motion again and confirm glide is available.

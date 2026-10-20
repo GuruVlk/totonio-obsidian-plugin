@@ -247,6 +247,13 @@ test('glide can be interrupted, disabled, and cancelled by resize or reduced mot
   expect(await scene.getAttribute('transform')).toBe(resized);
   await page.getByRole('button', { name: 'Glide between frames' }).click();
   await expect(page.getByRole('button', { name: 'Glide between frames' })).toHaveAttribute('aria-pressed', 'false');
+  const dimToggle = page.getByRole('button', { name: 'Dim the canvas around the active frame' });
+  await expect(page.locator('.totonio-frame-dim')).toBeVisible();
+  await dimToggle.click();
+  await expect(dimToggle).toHaveAttribute('aria-pressed', 'false');
+  await expect(page.locator('.totonio-frame-dim')).toBeHidden();
+  await dimToggle.click();
+  await expect(page.locator('.totonio-frame-dim')).toBeVisible();
   await page.keyboard.press('PageDown');
   const instant = await scene.getAttribute('transform');
   await page.clock.runFor(1000);

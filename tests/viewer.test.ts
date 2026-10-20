@@ -147,6 +147,22 @@ it('cleans up callbacks and media listeners when the viewer closes', () => {
   expect(callbacks.size).toBe(0);
 });
 
+it('turns the dim around the active frame off and on without leaving frame view', () => {
+  const dim = viewer.root.querySelector<SVGElement>('.totonio-frame-dim')!;
+  const toggle = viewer.root.querySelector<HTMLButtonElement>('[aria-label="Dim the canvas around the active frame"]')!;
+  expect(toggle.getAttribute('aria-pressed')).toBe('true');
+  click('Next frame');
+  expect(dim.style.display).toBe('');
+  click('Dim the canvas around the active frame');
+  expect(toggle.getAttribute('aria-pressed')).toBe('false');
+  expect(dim.style.display).toBe('none');
+  click('Next frame');
+  expect(viewer.presentation.activeFrame).toBeTruthy();
+  expect(dim.style.display).toBe('none');
+  click('Dim the canvas around the active frame');
+  expect(dim.style.display).toBe('');
+});
+
 it('keeps static previews and frameless documents free of animation controls', () => {
   viewer.dispose();
   const state = loadDocument(sampleJson, 'sample.totonio');
@@ -157,6 +173,7 @@ it('keeps static previews and frameless documents free of animation controls', (
   state.shapes = state.shapes.filter((shape) => shape.type !== 'frame');
   viewer = new Viewer(document.body, state);
   expect(viewer.root.querySelector('[aria-label="Glide between frames"]')).toBeNull();
+  expect(viewer.root.querySelector('[aria-label="Dim the canvas around the active frame"]')).toBeNull();
   expect(callbacks.size).toBe(0);
   expect(scene().getAttribute('transform')).toBe(targetTransform(fitBounds(contentBounds(state.shapes)!, { width, height: 560 })));
 });
