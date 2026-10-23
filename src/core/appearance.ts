@@ -113,7 +113,7 @@ const runTokens = (runs: TextRun[]): RunToken[] => {
 };
 const appendRun = (line: TextRun[], run: TextRun, text: string) => {
     const last = line[line.length - 1];
-    if (last && last.bold === run.bold && last.italic === run.italic && last.code === run.code && last.strike === run.strike && last.href === run.href)
+    if (last && last.bold === run.bold && last.italic === run.italic && last.code === run.code && last.strike === run.strike && last.href === run.href && last.color === run.color)
         last.text += text;
     else
         line.push({ ...run, text });
@@ -177,12 +177,13 @@ export type TextSpan = {
     code?: boolean;
     strike?: boolean;
     href?: string;
+    color?: string;
     size?: number;
 };
 const lineAdvance = (line: LayoutLine) => (line.scale ?? 1) + (line.lead ?? 0);
 export const layoutBlockHeight = (lines: LayoutLine[], lineHeight: number) => lines.reduce((height, line, index) => height + lineHeight * (index === 0 ? line.scale ?? 1 : lineAdvance(line)), 0);
 export const layoutFirstAscent = (lines: LayoutLine[], size: number) => size * (lines[0]?.scale ?? 1);
-const spanStyle = (run: TextRun, size: number | undefined) => ({ bold: run.bold, italic: run.italic, code: run.code, strike: run.strike, href: run.href, size });
+const spanStyle = (run: TextRun, size: number | undefined) => ({ bold: run.bold, italic: run.italic, code: run.code, strike: run.strike, href: run.href, color: run.color, size });
 export const layoutSpans = (lines: LayoutLine[], x: number, lineHeight: number, indented: boolean, size = 0): TextSpan[] => lines.flatMap((line, lineIndex) => {
     const dy = lineIndex === 0 ? 0 : lineHeight * lineAdvance(line);
     const spanSize = size > 0 && (line.scale ?? 1) !== 1 ? size * (line.scale ?? 1) : undefined;

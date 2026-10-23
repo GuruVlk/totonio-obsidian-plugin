@@ -1,19 +1,19 @@
-# Totonio Presentation 0.1.13
+# Totonio Presentation 0.1.14
 
 Architecture and sequence diagrams alongside your notes. Create in Totonio, present in Obsidian.
 
-## Turn Off the Frame Dimming
+## Coloured Words in Labels
 
-- A new spotlight button beside Glide turns the darkened area around the active presentation frame off, so the whole diagram stays in full view while you step through frames. Press it again to bring the spotlight back.
-- Like Glide, the choice applies to the current view and starts on each time a diagram opens.
-- Frameless diagrams and Markdown previews show no frame controls, as before.
-- Always visible objects, tag filters, automatic fit, pinch zoom, presentation glide and read-only file handling are unchanged.
+- Words coloured in Totonio's text editor now keep their colour here too, so a slide that mixes a coloured heading or key phrase with plain text looks the same in Obsidian as in the web app.
+- Colour combines with bold, italic, headings, lists and Panel body text.
+- Only hex colours are honoured; any other markup in a label stays visible as ordinary text.
+- Frame dimming, Always visible objects, tag filters, automatic fit, pinch zoom, presentation glide and read-only file handling are unchanged.
 
 The release workflow runs lint, unit/integration tests, browser tests, and build verification before publishing the three installation files with GitHub provenance attestations.
 
 ## Update
 
-In Obsidian, open Settings > Community plugins, check for updates, and update Totonio Presentation to 0.1.13 when available. The plugin does not install or update itself. The Community directory may need time to detect and review this release.
+In Obsidian, open Settings > Community plugins, check for updates, and update Totonio Presentation to 0.1.14 when available. The plugin does not install or update itself. The Community directory may need time to detect and review this release.
 
 ## Included
 

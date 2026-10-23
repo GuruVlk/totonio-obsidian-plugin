@@ -47,6 +47,10 @@ The tag menu ports `canvas/tags.ts`, `hooks/useTagFilter.ts`, and `panels/TagFil
 
 Filter state lives only in each viewer. Same-file reloads reconcile against available tags; different files, closed tabs, and static previews do not share selections. The matcher guards against duplicate descendant visits, and reload reconciliation is plugin-specific. `src/core/tags.ts` now includes these manually ported exports in addition to parser helpers; review/preserve them when rerunning the optional snapshot script, which was originally rooted only in parsing and rendering.
 
+### Coloured Text (0.1.14)
+
+Manually ported from web commit `cddbc33` on 2026-10-23. `markdown.ts` gains the optional `TextRun.color` and reads `<span style="color:#hex">…</span>` by stripping the tags first, recording where their text lands, reading emphasis on the plain text and splitting runs at the colour boundaries; only a 3- or 6-digit hex is accepted, and tags inside a code span or without a closing tag stay literal. `appearance.ts` keeps a colour change from merging runs and passes `color` to `TextSpan`; `render.ts` writes it as the tspan `fill`. The `tests/render.test.ts` expectation was cross-checked against the web app's `layoutSpans` output for the same label. No document field or format change.
+
 ### Connector Label Gaps (0.1.8)
 
 Manually ported from web commit `d17364a` on 2026-09-21. `connectorRouting.ts` uses a 0.1 font-size clearance per side. `connectorLabels.ts` floors the projected gap width at the sum of measured glyph advances from `appearance.ts`, while keeping wrapping, label bounds, and route placement unchanged. The glyph table and its coarse fallback match the web source; this port does not change the viewer's separate shape-text sizing rules.

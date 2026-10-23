@@ -82,6 +82,15 @@ describe('native SVG rendering', () => {
     expect(svg.querySelector('tspan[font-style="italic"]')?.textContent).toBe('Body');
     expect(svg.querySelector('tspan[font-weight="700"]')?.textContent).toBe('Header');
   });
+  it('paints coloured Markdown words in their own colour', () => {
+    const svg = render([{ ...box, type: 'text', labelAlign: 'left',
+      label: '- <span style="color:#B63F34">**Tooling:** rigid</span> and <span style="color:red">plain</span>' }]);
+    const spans = [...svg.querySelectorAll('tspan')].map((span) => [span.textContent, span.getAttribute('fill'), span.getAttribute('font-weight')]);
+    expect(spans).toEqual([
+      ['\u2022 ', null, null], ['Tooling:', '#b63f34', '700'], [' rigid', '#b63f34', null],
+      [' and <span style="color:red">plain</span>', null, null],
+    ]);
+  });
   it('omits frame outlines and includes overflow children in content fit', () => {
     const shapes: CanvasShape[] = [box, { ...box, id: 'child', parentId: 'box', x: 500 }, { ...box, id: 'frame', type: 'frame', frameOrder: 0, x: 10000 }];
     expect(render(shapes).querySelector('[data-shape-type="frame"]')).toBeNull();

@@ -5,6 +5,7 @@ export type TextRun = {
     code?: boolean;
     strike?: boolean;
     href?: string;
+    color?: string;
 };
 export type CellAlign = 'left' | 'center' | 'right';
 export type MarkdownLine = {
@@ -52,33 +53,78 @@ const INLINE_PATTERN = new RegExp([
     '\\*(?<italic>\\S(?:[^*]*\\S)?)\\*',
     '~~(?<strike>\\S(?:[^~]*\\S)?)~~',
 ].join('|'), 'g');
+// The inline HTML Obsidian and most Markdown viewers already draw in colour. Only a hex value is
+// accepted, so nothing from a label ever reaches a style attribute unchecked.
+const COLOR_SPAN_PATTERN = /<span style=(["'])\s*color:\s*(#[0-9a-f]{6}|#[0-9a-f]{3})\s*;?\s*\1>(.*?)<\/span>/gi;
+const CODE_SPAN_PATTERN = /`[^`]+`/g;
 const safeLinkHref = (href: string) => /^(?:https?:|mailto:)/i.test(href.trim()) ? href.trim() : undefined;
 const indentDepth = (leading: string) => Math.min(4, Math.floor(leading.replace(/\t/g, '  ').length / 2));
-export const parseInlineRuns = (text: string): TextRun[] => {
-    const runs: TextRun[] = [];
+type ColorRange = {
+    from: number;
+    to: number;
+    color: string;
+};
+type PlacedRun = TextRun & {
+    offset: number;
+};
+// Removes colour tags and records where their text lands, so emphasis can sit inside or around them.
+const stripColorSpans = (text: string) => {
+    const code = [...text.matchAll(CODE_SPAN_PATTERN)].map((match) => [match.index, match.index + match[0].length]);
+    const ranges: ColorRange[] = [];
+    let plain = '';
+    let consumed = 0;
+    for (const match of text.matchAll(COLOR_SPAN_PATTERN)) {
+        if (code.some(([from, to]) => match.index >= from && match.index < to))
+            continue;
+        plain += text.slice(consumed, match.index);
+        const inner = match[3];
+        if (inner)
+            ranges.push({ from: plain.length, to: plain.length + inner.length, color: match[2].toLowerCase() });
+        plain += inner;
+        consumed = match.index + match[0].length;
+    }
+    return { plain: plain + text.slice(consumed), ranges };
+};
+const emphasisRuns = (text: string): PlacedRun[] => {
+    const runs: PlacedRun[] = [];
     let consumed = 0;
     for (const match of text.matchAll(INLINE_PATTERN)) {
         const start = match.index ?? 0;
         const groups = match.groups ?? {};
         if (start > consumed)
-            runs.push({ text: text.slice(consumed, start) });
+            runs.push({ text: text.slice(consumed, start), offset: consumed });
         if (groups.code !== undefined)
-            runs.push({ text: groups.code, code: true });
+            runs.push({ text: groups.code, code: true, offset: start + 1 });
         else if (groups.link !== undefined)
-            runs.push({ text: groups.link, href: safeLinkHref(groups.href ?? '') });
+            runs.push({ text: groups.link, href: safeLinkHref(groups.href ?? ''), offset: start + (match[0].startsWith('!') ? 2 : 1) });
         else if (groups.bolditalic !== undefined)
-            runs.push({ text: groups.bolditalic, bold: true, italic: true });
+            runs.push({ text: groups.bolditalic, bold: true, italic: true, offset: start + 3 });
         else if (groups.bold !== undefined)
-            runs.push({ text: groups.bold, bold: true });
+            runs.push({ text: groups.bold, bold: true, offset: start + 2 });
         else if (groups.italic !== undefined)
-            runs.push({ text: groups.italic, italic: true });
+            runs.push({ text: groups.italic, italic: true, offset: start + 1 });
         else if (groups.strike !== undefined)
-            runs.push({ text: groups.strike, strike: true });
+            runs.push({ text: groups.strike, strike: true, offset: start + 2 });
         consumed = start + match[0].length;
     }
     if (consumed < text.length)
-        runs.push({ text: text.slice(consumed) });
-    return runs.length > 0 ? runs : [{ text }];
+        runs.push({ text: text.slice(consumed), offset: consumed });
+    return runs.length > 0 ? runs : [{ text, offset: 0 }];
+};
+const colorRuns = (runs: PlacedRun[], ranges: ColorRange[]): TextRun[] => runs.flatMap(({ offset, ...run }) => {
+    const cuts = ranges.flatMap((range) => [range.from - offset, range.to - offset]).filter((cut) => cut > 0 && cut < run.text.length);
+    const points = [...new Set([0, ...cuts, run.text.length])].sort((a, b) => a - b);
+    if (points.length < 2)
+        return [run];
+    return points.slice(0, -1).map((from, index) => {
+        const color = ranges.find((range) => offset + from >= range.from && offset + from < range.to)?.color;
+        const text = run.text.slice(from, points[index + 1]);
+        return color ? { ...run, text, color } : { ...run, text };
+    });
+});
+export const parseInlineRuns = (text: string): TextRun[] => {
+    const { plain, ranges } = stripColorSpans(text);
+    return colorRuns(emphasisRuns(plain), ranges);
 };
 export const runsText = (runs: TextRun[]) => runs.map((run) => run.text).join('');
 const styleRuns = (runs: TextRun[], style: Partial<TextRun>) => runs.map((run) => ({ ...run, ...style }));

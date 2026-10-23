@@ -131,6 +131,7 @@ All 18 current shape kinds are parsed: rectangles, brackets, arrows, circles, de
 
 - Legacy versions 1/2, `.tatamio`, unknown formats/versions, malformed JSON, invalid references, and malformed fields produce an in-pane error. No migration is performed.
 - Embedded PNG, JPEG, WebP, GIF, and SVG data URLs are supported within Totonio's original asset size limit. Remote images are rejected. SVG assets render only through isolated SVG `image` elements, never as injected markup. Markdown links in labels are displayed but inert.
+- Words wrapped in `<span style="color:#hex">…</span>` in a label or Panel body are drawn in that colour, as in the web app. Only a 3- or 6-digit hex is honoured; other markup stays visible as text and is never injected.
 - The diagram retains Totonio's light canvas and default diagram colors in both Obsidian themes. Controls follow Obsidian theme variables. Text uses Totonio's local font fallbacks; no fonts are downloaded.
 - Presentation frames use their saved rectangles. `frameFitContent` and editor auto-resize metadata do not mutate saved geometry. The editing grid is not shown.
 - To bound untrusted input, the viewer rejects JSON strings over 64 MiB, more than 10,000 shapes, and reference chains over 128 levels. Extremely dense diagrams can still be expensive to render.

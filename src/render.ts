@@ -31,6 +31,7 @@ function renderRuns(parent: Element, runs: Runs): void {
       x: run.x, dy: run.dy, 'font-size': run.size, 'font-weight': run.bold ? 700 : undefined,
       'font-style': run.italic ? 'italic' : undefined, 'font-family': run.code ? CODE_FONT_FAMILY : undefined,
       'text-decoration': [run.strike ? 'line-through' : '', run.href ? 'underline' : ''].filter(Boolean).join(' ') || undefined,
+      fill: run.color,
     });
     span.textContent = run.text;
   }
