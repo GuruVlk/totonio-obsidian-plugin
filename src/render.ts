@@ -62,7 +62,7 @@ function renderLabel(parent: Element, shape: CanvasShape): void {
     'font-style': shape.labelItalic ? 'italic' : 'normal', 'text-decoration': shapeLabelTextDecoration(shape),
   });
   renderLines(text, shapeLabelLayoutLines(shape), layout.x, layout.lineHeight,
-    shape.type === 'text' && layout.anchor === 'start', layout.size, layout.justifyWidth);
+    layout.anchor === 'start', layout.size, layout.justifyWidth);
 }
 
 function renderIcon(parent: Element, shape: CanvasShape): void {

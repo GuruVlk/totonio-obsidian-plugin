@@ -2,6 +2,7 @@
 import { describe, expect, it } from 'vitest';
 import { renderDiagram, svgElement } from '../src/render';
 import { connectorPathPoints } from '../src/core/geometry';
+import { panelLayout, shapeLabelLayoutLines } from '../src/core/appearance';
 import { contentBounds } from '../src/presentation';
 import type { CanvasShape, ShapeType } from '../src/core/types';
 
@@ -90,6 +91,35 @@ describe('native SVG rendering', () => {
       ['\u2022 ', null, null], ['Tooling:', '#b63f34', '700'], [' rigid', '#b63f34', null],
       [' and <span style="color:red">plain</span>', null, null],
     ]);
+  });
+  it('sits list items one level in from the prose around them', () => {
+    const lines = shapeLabelLayoutLines({ ...box, type: 'text', width: 400, height: 200,
+      label: 'Plan\n- One\n- [ ] Todo\n- [x] Done\n  - Nested', labelSize: 'small', labelWrap: true });
+    expect(lines.map((line) => line.text)).toEqual(['Plan', '\u2022 One', '\u2610 Todo', '\u2611 Done', '\u2022 Nested']);
+    expect(lines[0].indent).toBe(0);
+    expect(lines[1].indent).toBeGreaterThan(0);
+    expect(lines[2].indent).toBe(lines[1].indent);
+    expect(lines[4].indent).toBeGreaterThan(lines[1].indent);
+    const body = panelLayout({ ...box, type: 'panel', width: 220, height: 260, label: 'Server',
+      body: '- A list item long enough to wrap onto a second line', bodySize: 'small', bodyWrap: true }).bodyLayoutLines;
+    expect(body.length).toBeGreaterThan(1);
+    expect(body[0].indent).toBeGreaterThan(0);
+    expect(body[1].indent).toBeGreaterThan(body[0].indent);
+  });
+  it('indents list items in every left-aligned label', () => {
+    const xs = (svg: Element) => [...svg.querySelectorAll('tspan[x]')].map((span) => [span.textContent, Number(span.getAttribute('x'))] as const);
+    const rect = xs(render([{ ...box, width: 420, height: 260, fill: '#ffffff', labelAlign: 'left', labelSize: 'small',
+      label: '### Heading\n- [ ] First\n    - [ ] Nested' }]));
+    expect(rect.map(([text]) => text)).toEqual(['Heading', '\u2610 First', '\u2610 Nested']);
+    expect(rect[1][1]).toBeGreaterThan(rect[0][1]);
+    expect(rect[2][1]).toBeGreaterThan(rect[1][1]);
+    const text = xs(render([{ ...box, type: 'text', width: 400, height: 200, labelAlign: 'left', label: 'Plan\n- One' }]));
+    expect(text.map(([value]) => value)).toEqual(['Plan', '\u2022 One']);
+    expect(text[1][1]).toBeGreaterThan(text[0][1]);
+    const justified = xs(render([{ ...box, width: 420, height: 260, labelAlign: 'justify', labelSize: 'small',
+      label: 'Plan\n- [ ] First\n    - [ ] Nested' }]));
+    expect(justified[1][1]).toBeGreaterThan(justified[0][1]);
+    expect(justified[2][1]).toBeGreaterThan(justified[1][1]);
   });
   it('omits frame outlines and includes overflow children in content fit', () => {
     const shapes: CanvasShape[] = [box, { ...box, id: 'child', parentId: 'box', x: 500 }, { ...box, id: 'frame', type: 'frame', frameOrder: 0, x: 10000 }];

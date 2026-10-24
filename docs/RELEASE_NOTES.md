@@ -2,11 +2,12 @@
 
 Architecture and sequence diagrams alongside your notes. Create in Totonio, present in Obsidian.
 
-## Coloured Words in Labels
+## Coloured Words and Lists in Labels
 
 - Words coloured in Totonio's text editor now keep their colour here too, so a slide that mixes a coloured heading or key phrase with plain text looks the same in Obsidian as in the web app.
 - Colour combines with bold, italic, headings, lists and Panel body text.
 - Only hex colours are honoured; any other markup in a label stays visible as ordinary text.
+- Lists now sit one step in from the headings and text around them, and nested items step in further in every left-aligned label, not only in Text objects, matching the web app.
 - Frame dimming, Always visible objects, tag filters, automatic fit, pinch zoom, presentation glide and read-only file handling are unchanged.
 
 The release workflow runs lint, unit/integration tests, browser tests, and build verification before publishing the three installation files with GitHub provenance attestations.

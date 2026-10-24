@@ -282,8 +282,9 @@ const layoutLines = (value: string | undefined, size: number, maxWidth: number, 
             laid.push({ ...toLayoutLine(codeRuns(line.runs), 0), paragraphEnd: true });
             continue;
         }
+        // A list sits one level in from the prose around it, as Markdown viewers draw it.
         if (line.kind === 'list') {
-            laid.push(...markerGroup(line.glyph, line.runs, line.depth, size, maxUnits, width, wrap));
+            laid.push(...markerGroup(line.glyph, line.runs, line.depth + 1, size, maxUnits, width, wrap));
             continue;
         }
         if (line.kind === 'quote') {

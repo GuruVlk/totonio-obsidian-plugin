@@ -51,6 +51,10 @@ Filter state lives only in each viewer. Same-file reloads reconcile against avai
 
 Manually ported from web commit `cddbc33` on 2026-10-23. `markdown.ts` gains the optional `TextRun.color` and reads `<span style="color:#hex">…</span>` by stripping the tags first, recording where their text lands, reading emphasis on the plain text and splitting runs at the colour boundaries; only a 3- or 6-digit hex is accepted, and tags inside a code span or without a closing tag stay literal. `appearance.ts` keeps a colour change from merging runs and passes `color` to `TextSpan`; `render.ts` writes it as the tspan `fill`. The `tests/render.test.ts` expectation was cross-checked against the web app's `layoutSpans` output for the same label. No document field or format change.
 
+### List Indents (0.1.14)
+
+Manually ported from web commit `c341232` on 2026-10-24. `appearance.ts` `layoutLines` lays out a list item at `line.depth + 1`, so a top-level item sits one level in from prose and headings; quotes keep `line.depth`. `render.ts` applies line indents to every label anchored at `start` (left and justified), not only Text objects, in both the span and justified paths; the Panel body already used `bodyAnchor === 'start'`. Centred and right-aligned labels are unchanged. The `tests/render.test.ts` expectations mirror the web app's `appearance.test.ts` and `markdown-text.spec.ts` cases for the same labels. No document field or format change.
+
 ### Connector Label Gaps (0.1.8)
 
 Manually ported from web commit `d17364a` on 2026-09-21. `connectorRouting.ts` uses a 0.1 font-size clearance per side. `connectorLabels.ts` floors the projected gap width at the sum of measured glyph advances from `appearance.ts`, while keeping wrapping, label bounds, and route placement unchanged. The glyph table and its coarse fallback match the web source; this port does not change the viewer's separate shape-text sizing rules.
