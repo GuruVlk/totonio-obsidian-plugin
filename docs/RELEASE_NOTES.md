@@ -1,4 +1,4 @@
-# Totonio Presentation 0.1.15
+# Totonio Presentation 0.1.16
 
 Architecture and sequence diagrams alongside your notes. Create in Totonio, present in Obsidian.
 
@@ -12,7 +12,7 @@ The release workflow runs lint, unit/integration tests, browser tests, and build
 
 ## Update
 
-In Obsidian, open Settings > Community plugins, check for updates, and update Totonio Presentation to 0.1.15 when available. The plugin does not install or update itself. The Community directory may need time to detect and review this release.
+In Obsidian, open Settings > Community plugins, check for updates, and update Totonio Presentation to 0.1.16 when available. The plugin does not install or update itself. The Community directory may need time to detect and review this release.
 
 ## Included
 

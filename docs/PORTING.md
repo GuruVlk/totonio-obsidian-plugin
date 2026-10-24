@@ -59,9 +59,11 @@ Manually ported from web commit `c341232` on 2026-10-24. `appearance.ts` `layout
 
 Manually ported from web commit `90ad877` on 2026-10-24. In `appearance.ts` `markerGroup`, the list glyph or quote bar takes the colour of the item's first non-blank run and still merges into that run unless it is emphasised; an item that starts with plain text keeps an uncoloured marker. This is a Totonio rendering rule, not Obsidian parity: Obsidian's own Markdown does not colour list markers. The `tests/render.test.ts` expectations mirror the web app's `appearance.test.ts` case and its `markdown-text.spec.ts` bullet fill (`#b63f34`). No document field or format change.
 
-### Markdown Rule Width (0.1.15)
+### Markdown Rule Width (0.1.16)
 
 Manually ported from web commit `95458d7` ("Keep a Markdown --- rule inside its box", branch `fix/markdown-rule-width`) on 2026-10-24, read from the commit rather than the web working tree. In `appearance.ts` `layoutLines`, a `---` rule now counts its U+2500 glyphs at `RULE_GLYPH_UNITS = 1` em each, `floor(maxUnits * RULE_FILL)`, instead of the generic 0.576 em text-width estimate. No label font has that glyph, so the browser falls back to one about a full em wide and the old count drew the rule roughly 1.7 times too long, past both edges of its box. The `tests/render.test.ts` counts (9, 11 and 7 glyphs for a 340-wide Rectangle, a 400-wide Text object and a 300-wide Panel body) match the web app's `shapeLabelLayoutLines` and `panelLayout` output at that commit; the `tests/e2e/viewer.spec.ts` case mirrors the web `markdown-text.spec.ts` measurement of the drawn rule against a Rectangle and a Text object, mapping the Text object's saved edges to the screen because it has no outline. No document field or format change.
+
+The tag `0.1.15` was pushed for this change, but its release workflow failed before publishing: on the CI's Linux fonts the rule's side bearing at the Text object's zero-padding edge exceeded the browser case's fixed one-pixel allowance by under a millionth of a pixel. The allowance is now a tenth of the rendered font size, and the change ships as 0.1.16. Tag `0.1.15` is left in place, unpublished, as RELEASING.md requires.
 
 ### Connector Label Gaps (0.1.8)
 

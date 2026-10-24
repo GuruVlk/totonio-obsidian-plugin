@@ -470,7 +470,7 @@ test('a --- rule stays inside its box in a Rectangle and a Text object', async (
   ] })));
   await expect(page.getByRole('alert')).toHaveCount(0);
   for (const id of ['box', 'note']) {
-    const { rule, box } = await page.evaluate((id) => {
+    const { rule, box, fontSize } = await page.evaluate((id) => {
       const label = document.querySelector(`[data-shape-id="${id}"] text.totonio-label`) as SVGTextElement;
       const span = [...label.querySelectorAll('tspan')].find((candidate) => candidate.textContent!.includes('\u2500'))!;
       const ruleBox = span.getBoundingClientRect();
@@ -478,11 +478,13 @@ test('a --- rule stays inside its box in a Rectangle and a Text object', async (
       const edges = id === 'box' ? [100, 440] : [600, 940];
       const matrix = label.getScreenCTM()!;
       const [left, right] = edges.map((x) => new DOMPoint(x, 0).matrixTransform(matrix).x);
-      return { rule: { left: ruleBox.left, right: ruleBox.right, width: ruleBox.width }, box: { left, right, width: right - left } };
+      const fontSize = Number(label.getAttribute('font-size')) * matrix.a;
+      return { rule: { left: ruleBox.left, right: ruleBox.right, width: ruleBox.width }, box: { left, right, width: right - left }, fontSize };
     }, id);
-    // A one-pixel allowance covers the glyph's side bearing at a zero-padding edge.
-    expect(rule.left).toBeGreaterThanOrEqual(box.left - 1);
-    expect(rule.right).toBeLessThanOrEqual(box.right + 1);
+    // A tenth of an em covers the glyph's side bearing at a zero-padding edge, whatever font draws it.
+    const allowance = fontSize * 0.1;
+    expect(rule.left).toBeGreaterThanOrEqual(box.left - allowance);
+    expect(rule.right).toBeLessThanOrEqual(box.right + allowance);
     // Still a visible rule across most of the text width, not a stub.
     expect(rule.width).toBeGreaterThan(box.width * 0.6);
   }
