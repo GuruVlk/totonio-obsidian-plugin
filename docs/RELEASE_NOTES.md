@@ -1,21 +1,18 @@
-# Totonio Presentation 0.1.14
+# Totonio Presentation 0.1.15
 
 Architecture and sequence diagrams alongside your notes. Create in Totonio, present in Obsidian.
 
-## Coloured Words and Lists in Labels
+## Horizontal Rules Stay Inside Their Box
 
-- Words coloured in Totonio's text editor now keep their colour here too, so a slide that mixes a coloured heading or key phrase with plain text looks the same in Obsidian as in the web app.
-- Colour combines with bold, italic, headings, lists and Panel body text.
-- A bullet or task box takes the colour of the words it introduces, so a list of coloured items no longer shows a column of plain markers. An item that starts with plain text keeps a plain marker.
-- Only hex colours are honoured; any other markup in a label stays visible as ordinary text.
-- Lists now sit one step in from the headings and text around them, and nested items step in further in every left-aligned label, not only in Text objects, matching the web app.
-- Frame dimming, Always visible objects, tag filters, automatic fit, pinch zoom, presentation glide and read-only file handling are unchanged.
+- A `---` line in a label or Panel body now draws a rule that stays inside its box instead of running past both edges. It spans most of the text width, matching the web app.
+- This applies to Rectangles and other shapes, Text objects and Panel bodies. Your diagram files do not change.
+- Coloured words, list indents, frame dimming, Always visible objects, tag filters, automatic fit, pinch zoom, presentation glide and read-only file handling are unchanged.
 
 The release workflow runs lint, unit/integration tests, browser tests, and build verification before publishing the three installation files with GitHub provenance attestations.
 
 ## Update
 
-In Obsidian, open Settings > Community plugins, check for updates, and update Totonio Presentation to 0.1.14 when available. The plugin does not install or update itself. The Community directory may need time to detect and review this release.
+In Obsidian, open Settings > Community plugins, check for updates, and update Totonio Presentation to 0.1.15 when available. The plugin does not install or update itself. The Community directory may need time to detect and review this release.
 
 ## Included
 

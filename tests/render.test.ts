@@ -114,6 +114,15 @@ describe('native SVG rendering', () => {
     expect(body[0].indent).toBeGreaterThan(0);
     expect(body[1].indent).toBeGreaterThan(body[0].indent);
   });
+  it('counts a --- rule at one em per glyph so it fits inside its box', () => {
+    const rule = (lines: { text: string }[]) => lines.find((line) => line.text.includes('\u2500'))?.text;
+    // Counts match the web app's layout for the same labels at commit 95458d7.
+    expect(rule(shapeLabelLayoutLines({ ...box, width: 340, height: 550, fill: '#ffffff', label: 'whatever\n---', labelVerticalAlign: 'top' })))
+      .toBe('\u2500'.repeat(9));
+    expect(rule(shapeLabelLayoutLines({ ...box, type: 'text', width: 400, height: 200, label: 'whatever\n---' }))).toBe('\u2500'.repeat(11));
+    expect(rule(panelLayout({ ...box, type: 'panel', width: 300, height: 260, label: 'Server', body: 'x\n---' }).bodyLayoutLines))
+      .toBe('\u2500'.repeat(7));
+  });
   it('indents list items in every left-aligned label', () => {
     const xs = (svg: Element) => [...svg.querySelectorAll('tspan[x]')].map((span) => [span.textContent, Number(span.getAttribute('x'))] as const);
     const rect = xs(render([{ ...box, width: 420, height: 260, fill: '#ffffff', labelAlign: 'left', labelSize: 'small',

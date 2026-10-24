@@ -463,6 +463,31 @@ test('works offline, isolates embedded SVG, and never creates executable label l
   expect(externalRequests).toEqual([]);
 });
 
+test('a --- rule stays inside its box in a Rectangle and a Text object', async ({ page }) => {
+  await page.evaluate(() => window.harness.mount(JSON.stringify({ ...window.harness.sampleDocument, assets: [], shapes: [
+    { id: 'box', type: 'rect', x: 100, y: 100, width: 340, height: 550, parentId: null, color: '#252421', fill: '#ffffff', label: 'whatever\n---', labelVerticalAlign: 'top' },
+    { id: 'note', type: 'text', x: 600, y: 100, width: 340, height: 200, parentId: null, color: '#252421', label: 'whatever\n---', labelAlign: 'left' },
+  ] })));
+  await expect(page.getByRole('alert')).toHaveCount(0);
+  for (const id of ['box', 'note']) {
+    const { rule, box } = await page.evaluate((id) => {
+      const label = document.querySelector(`[data-shape-id="${id}"] text.totonio-label`) as SVGTextElement;
+      const span = [...label.querySelectorAll('tspan')].find((candidate) => candidate.textContent!.includes('\u2500'))!;
+      const ruleBox = span.getBoundingClientRect();
+      // Map the saved shape edges to the screen, since a Text object has no outline to measure.
+      const edges = id === 'box' ? [100, 440] : [600, 940];
+      const matrix = label.getScreenCTM()!;
+      const [left, right] = edges.map((x) => new DOMPoint(x, 0).matrixTransform(matrix).x);
+      return { rule: { left: ruleBox.left, right: ruleBox.right, width: ruleBox.width }, box: { left, right, width: right - left } };
+    }, id);
+    // A one-pixel allowance covers the glyph's side bearing at a zero-padding edge.
+    expect(rule.left).toBeGreaterThanOrEqual(box.left - 1);
+    expect(rule.right).toBeLessThanOrEqual(box.right + 1);
+    // Still a visible rule across most of the text width, not a stub.
+    expect(rule.width).toBeGreaterThan(box.width * 0.6);
+  }
+});
+
 test('reports bad JSON and unsupported files safely', async ({ page }) => {
   await page.evaluate(() => window.harness.mount('{'));
   await expect(page.getByRole('alert')).toHaveText('The file is not valid JSON.');

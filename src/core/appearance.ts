@@ -211,6 +211,8 @@ export const CODE_FONT_FAMILY = 'SFMono-Regular, Consolas, monospace';
 const HEADING_LEAD = 0.35;
 const TABLE_GAP_UNITS = 1.2;
 const RULE_FILL = 0.95;
+// No label font has a box-drawing line, so the browser falls back to one whose glyph is a full em wide.
+const RULE_GLYPH_UNITS = 1;
 const MAX_RULE_GLYPHS = 200;
 const closeGroup = (group: LayoutLine[]) => {
     group[group.length - 1] = { ...group[group.length - 1], paragraphEnd: true };
@@ -270,7 +272,7 @@ const layoutLines = (value: string | undefined, size: number, maxWidth: number, 
             continue;
         }
         if (line.kind === 'rule') {
-            const glyphs = Math.min(MAX_RULE_GLYPHS, Math.max(1, Math.floor(maxUnits * RULE_FILL / Math.max(0.1, width({ text: '' }, RULE_GLYPH)))));
+            const glyphs = Math.min(MAX_RULE_GLYPHS, Math.max(1, Math.floor(maxUnits * RULE_FILL / RULE_GLYPH_UNITS)));
             laid.push({ text: RULE_GLYPH.repeat(glyphs), indent: 0, runs: [{ text: RULE_GLYPH.repeat(glyphs) }], paragraphEnd: true, rule: true });
             continue;
         }
