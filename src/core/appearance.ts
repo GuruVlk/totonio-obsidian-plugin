@@ -225,7 +225,8 @@ const markerGroup = (glyph: string, runs: TextRun[], depth: number, size: number
     return closeGroup(contentLines.map((lineRuns, index) => {
         if (index > 0)
             return toLayoutLine(lineRuns, (depthUnits + glyphUnits) * size);
-        const withGlyph: TextRun[] = [{ text: `${glyph} ` }];
+        // The glyph takes the colour its text starts with, and merges into that run unless it is emphasised.
+        const withGlyph: TextRun[] = [{ text: `${glyph} `, color: runs.find((run) => run.text.trim())?.color }];
         lineRuns.forEach((run) => appendRun(withGlyph, run, run.text));
         return toLayoutLine(withGlyph, depthUnits * size);
     }));

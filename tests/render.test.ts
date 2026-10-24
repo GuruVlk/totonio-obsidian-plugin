@@ -88,9 +88,17 @@ describe('native SVG rendering', () => {
       label: '- <span style="color:#B63F34">**Tooling:** rigid</span> and <span style="color:red">plain</span>' }]);
     const spans = [...svg.querySelectorAll('tspan')].map((span) => [span.textContent, span.getAttribute('fill'), span.getAttribute('font-weight')]);
     expect(spans).toEqual([
-      ['\u2022 ', null, null], ['Tooling:', '#b63f34', '700'], [' rigid', '#b63f34', null],
+      ['\u2022 ', '#b63f34', null], ['Tooling:', '#b63f34', '700'], [' rigid', '#b63f34', null],
       [' and <span style="color:red">plain</span>', null, null],
     ]);
+  });
+  it('colours a list marker like the start of its item', () => {
+    const [blue, plain, bold] = shapeLabelLayoutLines({ ...box, type: 'text', width: 400, height: 200, labelSize: 'small',
+      label: '- [ ] <span style="color:#5375d6">Blue</span> item\n- Plain <span style="color:#5375d6">tail</span>\n- <span style="color:#ef6351">**Bold**</span>' });
+    // A plain glyph merges into the coloured run it introduces.
+    expect(blue.runs[0]).toEqual({ text: '\u2610 Blue', color: '#5375d6' });
+    expect(plain.runs[0].color).toBeUndefined();
+    expect(bold.runs[0]).toEqual({ text: '\u2022 ', color: '#ef6351' });
   });
   it('sits list items one level in from the prose around them', () => {
     const lines = shapeLabelLayoutLines({ ...box, type: 'text', width: 400, height: 200,

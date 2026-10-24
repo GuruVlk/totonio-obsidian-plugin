@@ -6,6 +6,7 @@ Architecture and sequence diagrams alongside your notes. Create in Totonio, pres
 
 - Words coloured in Totonio's text editor now keep their colour here too, so a slide that mixes a coloured heading or key phrase with plain text looks the same in Obsidian as in the web app.
 - Colour combines with bold, italic, headings, lists and Panel body text.
+- A bullet or task box takes the colour of the words it introduces, so a list of coloured items no longer shows a column of plain markers. An item that starts with plain text keeps a plain marker.
 - Only hex colours are honoured; any other markup in a label stays visible as ordinary text.
 - Lists now sit one step in from the headings and text around them, and nested items step in further in every left-aligned label, not only in Text objects, matching the web app.
 - Frame dimming, Always visible objects, tag filters, automatic fit, pinch zoom, presentation glide and read-only file handling are unchanged.

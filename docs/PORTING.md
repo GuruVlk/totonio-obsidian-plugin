@@ -55,6 +55,10 @@ Manually ported from web commit `cddbc33` on 2026-10-23. `markdown.ts` gains the
 
 Manually ported from web commit `c341232` on 2026-10-24. `appearance.ts` `layoutLines` lays out a list item at `line.depth + 1`, so a top-level item sits one level in from prose and headings; quotes keep `line.depth`. `render.ts` applies line indents to every label anchored at `start` (left and justified), not only Text objects, in both the span and justified paths; the Panel body already used `bodyAnchor === 'start'`. Centred and right-aligned labels are unchanged. The `tests/render.test.ts` expectations mirror the web app's `appearance.test.ts` and `markdown-text.spec.ts` cases for the same labels. No document field or format change.
 
+### Coloured List Markers (0.1.14)
+
+Manually ported from web commit `90ad877` on 2026-10-24. In `appearance.ts` `markerGroup`, the list glyph or quote bar takes the colour of the item's first non-blank run and still merges into that run unless it is emphasised; an item that starts with plain text keeps an uncoloured marker. This is a Totonio rendering rule, not Obsidian parity: Obsidian's own Markdown does not colour list markers. The `tests/render.test.ts` expectations mirror the web app's `appearance.test.ts` case and its `markdown-text.spec.ts` bullet fill (`#b63f34`). No document field or format change.
+
 ### Connector Label Gaps (0.1.8)
 
 Manually ported from web commit `d17364a` on 2026-09-21. `connectorRouting.ts` uses a 0.1 font-size clearance per side. `connectorLabels.ts` floors the projected gap width at the sum of measured glyph advances from `appearance.ts`, while keeping wrapping, label bounds, and route placement unchanged. The glyph table and its coarse fallback match the web source; this port does not change the viewer's separate shape-text sizing rules.
