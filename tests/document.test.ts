@@ -61,6 +61,27 @@ describe('structural validation', () => {
     expect(load({ shapes: [{ ...shape, ignoreTagFilter: false }] }).shapes[0].ignoreTagFilter).toBeUndefined();
     expect(() => load({ shapes: [{ ...shape, ignoreTagFilter: 'yes' }] })).toThrow('malformed');
   });
+  // Mirrors web commit a13590e, document.test.ts 'keeps object notes, omits empty ones and rejects a note that is not text'.
+  it('keeps object notes, omits empty ones and rejects a note that is not text', () => {
+    const connector = { ...shape, id: 'connector', type: 'line', note: 'TLS terminates at the gateway.',
+      start: { type: 'shape', shapeId: 'box' }, end: { type: 'free', x: 360, y: 144 } };
+    const state = load({ shapes: [
+      { ...shape, note: 'Owned by the platform team.\nReview before Q1.' }, connector,
+      { ...shape, id: 'frame', type: 'frame', frameOrder: 0, note: 'Frame note' },
+      { ...shape, id: 'group', type: 'group', note: 'Group note' },
+    ] });
+    expect(state.shapes.map((entry) => entry.note)).toEqual([
+      'Owned by the platform team.\nReview before Q1.', 'TLS terminates at the gateway.', 'Frame note', 'Group note',
+    ]);
+    expect(load({ shapes: [{ ...shape, note: '' }] }).shapes[0]).not.toHaveProperty('note');
+    const withNote = (note: unknown) => parseTotonioDocument({ ...document, shapes: [{ ...shape, note }] });
+    expect(withNote('Check with security.')?.shapes[0].note).toBe('Check with security.');
+    expect(withNote('')?.shapes[0]).not.toHaveProperty('note');
+    for (const note of [42, ['a'], null, true, { text: 'a' }]) {
+      expect(withNote(note)).toBeNull();
+      expect(() => load({ shapes: [{ ...shape, note }] })).toThrow('malformed');
+    }
+  });
   it.each([
     { shapes: [{}] }, { shapes: [shape, shape] }, { assets: null }, { shapes: [{ ...shape, parentId: 'missing' }] },
     { shapes: [{ ...shape, parentId: 'box' }] }, { shapes: [{ ...shape, type: 'unknown' }] },

@@ -416,6 +416,108 @@ test('trackpad pinch zoom uses twice the wheel sensitivity and stays cursor-anch
   }
 });
 
+test('shows object notes on hover as plain text, hides them on demand, and toggles them off', async ({ page, context }, info) => {
+  await context.setOffline(true);
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  const notes = { start: 'Owned by the platform team.\nReview before Q1.', 'route-1': 'TLS terminates at the gateway.',
+    'frame-1': 'Overview <img src=x onerror="window.injected = true">' };
+  await page.evaluate((notes) => {
+    const sample = window.harness.sampleDocument;
+    window.harness.mount(JSON.stringify({ ...sample, shapes: sample.shapes.map((shape) => ({ ...shape,
+      ...(notes[shape.id as keyof typeof notes] ? { note: notes[shape.id as keyof typeof notes] } : {}) })) }));
+  }, notes);
+  const tooltip = page.getByRole('tooltip');
+  const toggle = page.getByRole('button', { name: 'Show notes on hover', exact: true });
+  await expect(toggle).toHaveAttribute('aria-pressed', 'true');
+  await expect(toggle).toHaveAttribute('title', 'Show notes on hover');
+  const scene = await page.locator('.totonio-svg').innerHTML();
+  const center = async (selector: string) => {
+    const box = (await page.locator(selector).boundingBox())!;
+    return { x: box.x + box.width / 2, y: box.y + box.height / 2 };
+  };
+  const start = await center('[data-shape-id="start"] > rect');
+  await page.mouse.move(start.x, start.y);
+  await expect(tooltip).toBeVisible();
+  await expect(tooltip).toHaveText(notes.start);
+  expect(await page.locator('.totonio-svg').innerHTML()).toBe(scene);
+  expect(await tooltip.evaluate((element) => (element as HTMLElement).innerText)).toBe(notes.start);
+  const surface = (await page.locator('.totonio-surface').boundingBox())!;
+  const box = (await tooltip.boundingBox())!;
+  expect(box.x).toBeGreaterThanOrEqual(surface.x);
+  expect(box.y).toBeGreaterThanOrEqual(surface.y);
+  expect(box.x + box.width).toBeLessThanOrEqual(surface.x + surface.width);
+  expect(box.y + box.height).toBeLessThanOrEqual(surface.y + surface.height);
+  await page.screenshot({ path: info.outputPath('note-hover.png') });
+  const decision = await center('[data-shape-id="decision"] > path');
+  await page.mouse.move(decision.x, decision.y);
+  await expect(tooltip).toBeHidden();
+  await page.mouse.move(start.x, start.y);
+  await expect(tooltip).toHaveText(notes.start);
+  await page.keyboard.press('Escape');
+  await expect(tooltip).toBeHidden();
+  await expect(page.locator('.totonio-frame-status')).toContainText('1 / 2');
+  await page.locator('.totonio-viewer').focus();
+  await page.mouse.move(start.x + 1, start.y + 1);
+  await expect(tooltip).toHaveText(notes.start);
+  await page.keyboard.press('Escape');
+  await expect(tooltip).toBeHidden();
+  await expect(page.locator('.totonio-frame-status')).toHaveText('Free view');
+  Object.assign(start, await center('[data-shape-id="start"] > rect'));
+  const label = await center('[data-label-for="route-1"]');
+  await page.mouse.move(label.x, label.y);
+  await expect(tooltip).toHaveText(notes['route-1']);
+  const frameEdge = await page.evaluate(() => {
+    const view = window.harness.view!;
+    const bounds = document.querySelector('.totonio-surface')!.getBoundingClientRect();
+    return { x: bounds.left + view.x + 10 * view.zoom, y: bounds.top + view.y + 300 * view.zoom };
+  });
+  await page.mouse.move(frameEdge.x, frameEdge.y);
+  await expect(tooltip).toHaveText(notes['frame-1']);
+  await expect(tooltip.locator('*')).toHaveCount(0);
+  expect(await page.evaluate(() => Reflect.get(window, 'injected'))).toBeUndefined();
+  await page.mouse.wheel(0, -120);
+  await expect(tooltip).toBeHidden();
+  await page.getByRole('button', { name: 'Reset view' }).click();
+  await page.mouse.move(start.x, start.y);
+  await expect(tooltip).toHaveText(notes.start);
+  await page.mouse.move(surface.x + surface.width / 2, surface.y - 20);
+  await expect(tooltip).toBeHidden();
+  await page.mouse.move(start.x, start.y);
+  await expect(tooltip).toBeVisible();
+  await page.mouse.down();
+  await expect(tooltip).toBeHidden();
+  await page.mouse.move(start.x + 30, start.y + 20, { steps: 3 });
+  await expect(tooltip).toBeHidden();
+  await page.mouse.up();
+  await page.getByRole('button', { name: 'Reset view' }).click();
+  await toggle.click();
+  await expect(toggle).toHaveAttribute('aria-pressed', 'false');
+  await page.mouse.move(start.x, start.y);
+  await page.mouse.move(start.x + 2, start.y + 2);
+  await expect(tooltip).toBeHidden();
+  await toggle.click();
+  await page.mouse.move(start.x, start.y);
+  await expect(tooltip).toHaveText(notes.start);
+  await page.evaluate(() => { for (const [name, value] of [['--background-primary', '#1e1e1e'], ['--text-normal', '#dadada']]) document.documentElement.style.setProperty(name, value); });
+  await expect(tooltip).toHaveCSS('background-color', 'rgb(30, 30, 30)');
+  await expect(tooltip).toHaveCSS('color', 'rgb(218, 218, 218)');
+  if (info.project.name === 'mobile') {
+    await page.mouse.move(surface.x + 2, surface.y + surface.height - 2);
+    await expect(tooltip).toBeHidden();
+    await page.touchscreen.tap(start.x, start.y);
+    await expect(tooltip).toBeHidden();
+  }
+  await page.evaluate(() => { document.getElementById('pane')!.style.cssText = 'width:280px;height:420px'; });
+  await page.getByRole('button', { name: 'Start frames' }).click();
+  const overflow = await page.locator('.totonio-toolbar').evaluate((toolbar) => [...toolbar.querySelectorAll('button:not([hidden])')].some((button) => {
+    const parent = toolbar.getBoundingClientRect(), child = button.getBoundingClientRect();
+    return child.right > parent.right || child.left < parent.left || child.bottom > parent.bottom;
+  }));
+  expect(overflow).toBe(false);
+  await page.evaluate(() => window.harness.mount(window.harness.sampleJson));
+  await expect(toggle).toHaveCount(0);
+});
+
 test('refits frames on pane resize and keeps controls inside the toolbar', async ({ page }) => {
   await page.evaluate(() => { document.getElementById('pane')!.style.cssText = 'width:280px;height:420px'; });
   await expect.poll(() => page.locator('.totonio-svg').getAttribute('viewBox')).toBe('0 0 280 380');

@@ -24,6 +24,7 @@ Use a disposable vault and a built plugin. These application-host checks remain 
 - [ ] Focus the viewer and navigate using Left, Right, Page Up, and Page Down. These keys must not move frames while focus is in a different Markdown editor pane.
 - [ ] Press Escape or Free view. The original free viewport returns, and dimming disappears. Start frames restarts at Frame 1.
 - [ ] Confirm there are no editing handles, selection, Properties, Structure, custom document tabs, import/export, editing menus, or undo/redo controls.
+- [ ] Open a disposable diagram saved from the web app with a multi-line note on a shape, a Connector and a frame, and an object without a note. Hovering each with a mouse shows its note as plain text with line breaks; the note-less object shows nothing. Moving away, panning, zooming, changing frames and Escape hide it. The sticky-note toggle turns hover notes off and on, and is absent for a diagram without notes. Check light and dark themes, a pop-out window, and that tapping on a touch device keeps tap/pan unchanged.
 
 ## Free View and Resize
 

@@ -56,3 +56,5 @@
 .totonio-tag-count { color: var(--text-muted); font-variant-numeric: tabular-nums; flex: 0 0 auto; }
 .totonio-tag-options { margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--background-modifier-border); }
 .totonio-tag-summary { margin-top: 8px; color: var(--text-muted); }
+.totonio-note-popover { position: absolute; z-index: 4; left: 0; top: 0; max-width: min(320px, calc(100% - 16px)); max-height: calc(100% - 16px); overflow: hidden; box-sizing: border-box; padding: 6px 10px; border: 1px solid var(--background-modifier-border); border-radius: 6px; background: var(--background-primary); color: var(--text-normal); box-shadow: var(--shadow-s); font-family: var(--font-interface); font-size: var(--font-ui-small, 13px); line-height: 1.45; white-space: pre-wrap; overflow-wrap: anywhere; pointer-events: none; user-select: none; }
+.totonio-viewer .totonio-note-popover[hidden] { display: none; }

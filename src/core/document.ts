@@ -19,6 +19,7 @@ type DocumentShape = {
     id: string;
     type: ShapeType;
     name?: string;
+    note?: string;
     tags?: string[];
     ignoreTagFilter?: boolean;
     x: number;
@@ -200,6 +201,10 @@ const parseShape = (value: unknown): DocumentShape | null => {
         return null;
     if (value.name !== undefined)
         shape.name = value.name;
+    if (value.note !== undefined && typeof value.note !== 'string')
+        return null;
+    if (value.note)
+        shape.note = value.note;
     if (value.label !== undefined && typeof value.label === 'string')
         shape.label = value.label;
     if (value.fill !== undefined && isCssColor(value.fill))

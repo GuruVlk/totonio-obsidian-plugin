@@ -1,10 +1,11 @@
 // @vitest-environment jsdom
-import { afterEach, beforeEach, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { Viewer } from '../src/viewer';
 import { loadDocument } from '../src/document';
 import { sampleJson } from './fixture';
 import { interpolateView } from '../src/viewTween';
-import type { View } from '../src/core/types';
+import type { CanvasState, Point, View } from '../src/core/types';
+import { connectorPathPoints, pointAtPolylinePosition } from '../src/core/geometry';
 import { contentBounds, fitBounds } from '../src/presentation';
 
 let viewer: Viewer;
@@ -225,4 +226,99 @@ it.each([-100, 100])('doubles trackpad pinch sensitivity at delta %s while keepi
   expect(pinch.zoom).toBeCloseTo(saved.zoom * (wheelZoom / saved.zoom) ** 2);
   expect((point.x - pinch.x) / pinch.zoom).toBeCloseTo((point.x - saved.x) / saved.zoom);
   expect((point.y - pinch.y) / pinch.zoom).toBeCloseTo((point.y - saved.y) / saved.zoom);
+});
+
+describe('notes on hover', () => {
+  const notes: Record<string, string> = {
+    start: 'Owned by the platform team.\nReview before Q1.',
+    'route-1': 'TLS terminates at the gateway.',
+    'frame-1': 'Overview frame <img src=x onerror="alert(1)">',
+  };
+  let state: CanvasState;
+  const popover = () => viewer.root.querySelector<HTMLElement>('.totonio-note-popover')!;
+  const toggle = () => viewer.root.querySelector<HTMLButtonElement>('[aria-label="Show notes on hover"]');
+  const pointer = (type: string, at: Point = { x: 0, y: 0 }, pointerType = 'mouse', button = 0) => {
+    const view = viewer.presentation.view;
+    const event = new MouseEvent(type, { clientX: at.x * view.zoom + view.x, clientY: at.y * view.zoom + view.y, button, bubbles: true, cancelable: true });
+    Object.defineProperties(event, { pointerType: { value: pointerType }, pointerId: { value: 1 } });
+    viewer.root.querySelector('.totonio-surface')!.dispatchEvent(event);
+  };
+  const center = (id: string) => {
+    const shape = state.shapes.find((entry) => entry.id === id)!;
+    return { x: shape.x + shape.width / 2, y: shape.y + shape.height / 2 };
+  };
+  const visibleNote = () => popover().hidden ? null : popover().textContent;
+
+  beforeEach(() => {
+    viewer.dispose();
+    state = loadDocument(sampleJson, 'sample.totonio');
+    for (const shape of state.shapes) if (notes[shape.id]) shape.note = notes[shape.id];
+    viewer = new Viewer(document.body, state);
+  });
+
+  it('adds a pressed toggle only when a document has notes', () => {
+    expect(toggle()?.getAttribute('aria-pressed')).toBe('true');
+    expect(toggle()?.title).toBe('Show notes on hover');
+    expect(popover().hidden).toBe(true);
+    viewer.dispose();
+    viewer = new Viewer(document.body, loadDocument(sampleJson, 'sample.totonio'));
+    expect(toggle()).toBeNull();
+    expect(viewer.root.querySelector('.totonio-note-popover')).toBeNull();
+  });
+
+  it('shows the hovered object note as plain text and nothing for objects without one', () => {
+    const scene = viewer.root.querySelector('.totonio-svg')!.innerHTML;
+    pointer('pointermove', center('start'));
+    expect(visibleNote()).toBe(notes.start);
+    expect(popover().getAttribute('role')).toBe('tooltip');
+    pointer('pointermove', center('decision'));
+    expect(visibleNote()).toBeNull();
+    const route = state.shapes.find((shape) => shape.id === 'route-1')!;
+    pointer('pointermove', pointAtPolylinePosition(connectorPathPoints(route, state.shapes), 0.15));
+    expect(visibleNote()).toBe(notes['route-1']);
+    pointer('pointermove', { x: 890, y: 510 });
+    expect(visibleNote()).toBe(notes['frame-1']);
+    expect(popover().children).toHaveLength(0);
+    expect(viewer.root.querySelector('img')).toBeNull();
+    pointer('pointermove', { x: 590, y: 200 });
+    expect(visibleNote()).toBe(notes['frame-1']);
+    pointer('pointermove', { x: 100, y: 110 });
+    expect(visibleNote()).toBeNull();
+    expect(viewer.root.querySelector('.totonio-svg')!.innerHTML).toBe(scene);
+  });
+
+  it('hides on leave, Escape, wheel, pointer down and view changes, and ignores touch', () => {
+    const show = () => { pointer('pointermove', center('start')); expect(visibleNote()).toBe(notes.start); };
+    show();
+    pointer('pointerleave');
+    expect(visibleNote()).toBeNull();
+    show();
+    viewer.root.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+    expect(visibleNote()).toBeNull();
+    show();
+    pointer('pointerdown', center('start'), 'mouse', 2);
+    expect(visibleNote()).toBeNull();
+    show();
+    viewer.root.querySelector('.totonio-surface')!.dispatchEvent(new WheelEvent('wheel', { deltaY: 10, cancelable: true }));
+    expect(visibleNote()).toBeNull();
+    show();
+    viewer.presentation.pan({ x: 5, y: 0 });
+    viewer.resize();
+    expect(visibleNote()).toBeNull();
+    pointer('pointermove', center('start'), 'touch');
+    expect(visibleNote()).toBeNull();
+  });
+
+  it('turns hover notes off and on for this view', () => {
+    pointer('pointermove', center('start'));
+    click('Show notes on hover');
+    expect(toggle()?.getAttribute('aria-pressed')).toBe('false');
+    expect(visibleNote()).toBeNull();
+    pointer('pointermove', center('start'));
+    expect(visibleNote()).toBeNull();
+    click('Show notes on hover');
+    expect(toggle()?.getAttribute('aria-pressed')).toBe('true');
+    pointer('pointermove', center('start'));
+    expect(visibleNote()).toBe(notes.start);
+  });
 });

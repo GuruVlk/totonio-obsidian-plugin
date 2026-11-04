@@ -1,7 +1,9 @@
-import { ChevronLeft, ChevronRight, ExternalLink, Maximize, Minimize, Play, RotateCcw, Spotlight, Wind } from 'lucide';
+import { ChevronLeft, ChevronRight, ExternalLink, Maximize, Minimize, Play, RotateCcw, Spotlight, StickyNote, Wind } from 'lucide';
 import { Presentation } from './presentation';
 import { renderDiagram, svgElement } from './render';
-import type { CanvasState, Point, View } from './core/types';
+import { documentHasNotes, shapeAtPoint } from './notes';
+import { shapesInPaintOrder } from './core/geometry';
+import type { CanvasShape, CanvasState, Point, View } from './core/types';
 import { interpolateView, VIEW_TWEEN_MS } from './viewTween';
 import { TagFilterMenu } from './tagFilter';
 import type { TagFilter } from './core/tags';
@@ -38,6 +40,11 @@ export class Viewer {
   private glideButton?: HTMLButtonElement;
   private dimEnabled = true;
   private dimButton?: HTMLButtonElement;
+  private notesEnabled = true;
+  private notesButton?: HTMLButtonElement;
+  private notePopover?: HTMLDivElement;
+  private noteShapes: CanvasShape[] = [];
+  private noteShown?: { id: string; view: View };
   private readonly motionPreference?: MediaQueryList;
   private lastSize = { width: 0, height: 0 };
   private disposed = false;
@@ -134,6 +141,16 @@ export class Viewer {
         if (!this.glideEnabled) this.cancelGlide();
       });
     }
+    if (documentHasNotes(this.presentation.document.shapes)) {
+      this.notesButton = button('Show notes on hover', StickyNote, () => {
+        this.notesEnabled = !this.notesEnabled;
+        if (!this.notesEnabled) this.hideNote();
+      });
+      this.noteShapes = shapesInPaintOrder(this.presentation.document.shapes).reverse();
+      this.notePopover = this.surface.createDiv({ cls: 'totonio-note-popover' });
+      this.notePopover.setAttribute('role', 'tooltip');
+      this.notePopover.hidden = true;
+    }
     const website = button('Open in Totonio', ExternalLink, () => {
       this.root.ownerDocument.defaultView?.open('https://totonio.pages.dev/', '_blank', 'noopener,noreferrer');
     });
@@ -201,6 +218,7 @@ export class Viewer {
     });
     this.listen(this.surface, 'pointerdown', (event) => {
       const pointer = event as PointerEvent;
+      this.hideNote();
       this.root.focus({ preventScroll: true });
       if (this.presentation.activeFrame || ![0, 1].includes(pointer.button)) return;
       pointer.preventDefault();
@@ -231,8 +249,16 @@ export class Viewer {
       if (!this.pointers.size) this.root.classList.remove('is-panning');
     };
     for (const type of ['pointerup', 'pointercancel', 'lostpointercapture']) this.listen(this.surface, type, release);
+    if (this.notePopover) {
+      this.listen(this.surface, 'pointermove', (event) => this.showNoteAt(event as PointerEvent));
+      this.listen(this.surface, 'pointerleave', () => this.hideNote());
+      this.listen(this.root.ownerDocument, 'scroll', () => this.hideNote(), { capture: true, passive: true });
+      // A hover note dismisses on Escape without needing focus, and without consuming the key.
+      this.listen(this.root.ownerDocument, 'keydown', (event) => { if ((event as KeyboardEvent).key === 'Escape') this.hideNote(); }, { capture: true });
+    }
     this.listen(this.surface, 'wheel', (event) => {
       const wheel = event as WheelEvent;
+      this.hideNote();
       wheel.preventDefault(); wheel.stopPropagation();
       if (this.presentation.activeFrame) return;
       const multiplier = wheel.deltaMode === 1 ? 16 : wheel.deltaMode === 2 ? this.size().height : 1;
@@ -281,6 +307,9 @@ export class Viewer {
       this.glideButton.title = this.motionPreference?.matches ? 'Glide disabled by reduced motion preference' : 'Glide between frames';
     }
     this.dimButton?.setAttribute('aria-pressed', String(this.dimEnabled));
+    this.notesButton?.setAttribute('aria-pressed', String(this.notesEnabled));
+    const shown = this.noteShown?.view;
+    if (shown && (shown.x !== view.x || shown.y !== view.y || shown.zoom !== view.zoom)) this.hideNote();
     this.root.classList.toggle('is-frame', Boolean(activeFrame));
     this.dim.style.display = activeFrame && this.dimEnabled ? '' : 'none';
     if (activeFrame) {
@@ -310,6 +339,36 @@ export class Viewer {
     for (const id of this.pointers.keys()) if (this.surface.hasPointerCapture(id)) this.surface.releasePointerCapture(id);
     this.pointers.clear();
     this.root.remove();
+  }
+
+  private showNoteAt(pointer: PointerEvent): void {
+    // Touch keeps tap and pan unchanged; mouse and pen hover show notes.
+    if (!this.notePopover || !this.notesEnabled || pointer.pointerType === 'touch' || this.pointers.size) return;
+    const screen = this.point(pointer);
+    const view = this.displayedView;
+    const shape = shapeAtPoint(this.noteShapes, this.presentation.document.shapes,
+      { x: (screen.x - view.x) / view.zoom, y: (screen.y - view.y) / view.zoom }, view.zoom);
+    if (!shape?.note) { this.hideNote(); return; }
+    if (this.noteShown?.id === shape.id) return;
+    const popover = this.notePopover;
+    popover.textContent = shape.note;
+    popover.hidden = false;
+    this.noteShown = { id: shape.id, view: { ...view } };
+    const size = this.size();
+    const gap = 8;
+    let left = screen.x + 14;
+    if (left + popover.offsetWidth > size.width - gap) left = screen.x - 14 - popover.offsetWidth;
+    let top = screen.y + 18;
+    if (top + popover.offsetHeight > size.height - gap) top = screen.y - 12 - popover.offsetHeight;
+    popover.style.setProperty('left', `${Math.max(gap, left)}px`);
+    popover.style.setProperty('top', `${Math.max(gap, top)}px`);
+  }
+
+  private hideNote(): void {
+    if (!this.notePopover || this.notePopover.hidden) return;
+    this.notePopover.hidden = true;
+    this.notePopover.textContent = '';
+    this.noteShown = undefined;
   }
 
   private applyTagFilter(): void {

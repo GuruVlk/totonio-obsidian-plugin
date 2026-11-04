@@ -45,6 +45,8 @@ export type CanvasShape = {
     id: string;
     type: ShapeType;
     name?: string;
+    // Free text for the author; never drawn or exported as part of the picture.
+    note?: string;
     tags?: string[];
     ignoreTagFilter?: boolean;
     x: number;
