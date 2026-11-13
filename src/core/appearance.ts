@@ -207,6 +207,7 @@ export const layoutSpans = (lines: LayoutLine[], x: number, lineHeight: number, 
         ? { text: run.text, x: startX, dy, ...spanStyle(run, spanSize) }
         : { text: run.text, ...spanStyle(run, spanSize) });
 });
+export const plainSpans = (lines: string[], x: number, lineHeight: number): TextSpan[] => lines.map((text, index) => ({ text: text || ' ', x, dy: index === 0 ? 0 : lineHeight }));
 export const CODE_FONT_FAMILY = 'SFMono-Regular, Consolas, monospace';
 const HEADING_LEAD = 0.35;
 const TABLE_GAP_UNITS = 1.2;

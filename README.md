@@ -66,7 +66,7 @@ The repository directory can have any name. The plugin installation directory an
 
 ## Privacy and External Links
 
-No account or payment is required to use the viewer. It makes no background network requests, contains no telemetry, and reads only files in your vault through Obsidian's Vault API. Diagram files are never uploaded or modified by the plugin.
+No account or payment is required to use the viewer. It makes no background network requests, contains no telemetry, and reads only files in your vault through Obsidian's Vault API. Diagram files are never uploaded or modified by the plugin. Right-click copying places the diagram on your system clipboard only; it is not sent anywhere.
 
 The optional **Open in Totonio** button opens `https://totonio.pages.dev/` in your browser without sending the file or its path. The information page also includes a static **Buy me a coffee** link to `https://www.buymeacoffee.com/vladimirplk`. These sites are contacted by your browser only after you choose their links; no remote widgets, scripts, or images are embedded. The web app and support site operate outside the plugin.
 
@@ -94,8 +94,9 @@ Obsidian prefixes commands with the plugin's display name. These commands have n
 - In free view, drag to pan and use the wheel or pinch to zoom. Shift+wheel pans. Reset view restores the saved viewport; Fit content fits visible diagram content, including overflowing descendants and connector labels.
 - Trackpad pinch gestures (including MacBook trackpads) use twice the previous zoom sensitivity. Ordinary wheel zoom and touch-screen pinch sensitivity are unchanged.
 - Touch supports one-finger pan and two-finger pinch in free view. Keyboard navigation is scoped to the focused viewer, not the rest of Obsidian.
+- **Right-click to copy:** right-click a diagram, in its tab or a Markdown preview, and choose **Copy as JSON** or **Copy as PNG**. JSON is the saved file text, unchanged. PNG is the whole diagram on Totonio's canvas colour, drawn like the web app's PNG export at twice the size (scaled down for very large diagrams), with embedded images and without frame outlines. Both ignore the current frame, zoom and tag filter. A notice confirms the copy; copying an image can be unavailable on some mobile devices, and the notice then says so. Touch screens show the menu where a long press opens a context menu.
 
-The plugin has no selection, edit handles, editor panels or editor menus, drag/drop import, undo history, export, or save actions. Geometry and viewport changes exist only in memory. It uses `Vault.read`, never a vault write API, and does not use browser storage or persist plugin settings. It refreshes a view when the source is changed by something else.
+The plugin has no selection, edit handles, editor panels or editor menus, drag/drop import, undo history, file export, or save actions; copying to the clipboard is the only way to take a diagram out. Geometry and viewport changes exist only in memory. It uses `Vault.read`, never a vault write API, and does not use browser storage or persist plugin settings. It refreshes a view when the source is changed by something else.
 
 ## Tag Filters
 

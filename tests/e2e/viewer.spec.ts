@@ -290,6 +290,61 @@ test('Open in Totonio opens only the website without sharing the diagram', async
   await expect(button).toHaveCount(0);
 });
 
+test('right-click opens the copy menu without panning, and in previews without opening the file', async ({ page }) => {
+  const surface = page.locator('.totonio-surface');
+  const view = await page.evaluate(() => window.harness.view);
+  await surface.click({ button: 'right', position: { x: 200, y: 200 } });
+  expect(await page.evaluate(() => window.harness.menus)).toBe(1);
+  expect(await page.evaluate(() => window.harness.view)).toEqual(view);
+  await page.evaluate(() => window.harness.mount(window.harness.sampleJson, true));
+  await surface.click({ button: 'right' });
+  expect(await page.evaluate(() => ({ menus: window.harness.menus, opens: window.harness.opens }))).toEqual({ menus: 2, opens: 0 });
+});
+
+test('copies the whole diagram as the saved JSON and as a nonblank PNG, offline and with embedded images', async ({ page, context }) => {
+  await context.grantPermissions(['clipboard-read', 'clipboard-write']);
+  await context.setOffline(true);
+  const readPng = () => page.evaluate(async () => {
+    const [item] = await navigator.clipboard.read();
+    const bitmap = await createImageBitmap(await item.getType('image/png'));
+    const canvas = document.createElement('canvas');
+    canvas.width = bitmap.width;
+    canvas.height = bitmap.height;
+    const context = canvas.getContext('2d')!;
+    context.drawImage(bitmap, 0, 0);
+    const { data } = context.getImageData(0, 0, bitmap.width, bitmap.height);
+    const expected = window.harness.pngSize();
+    let dark = 0;
+    for (let index = 0; index < data.length; index += 4) if (data[index] + data[index + 1] + data[index + 2] < 300) dark++;
+    const imageColours = expected.images.map((box) => {
+      const pixels = context.getImageData(box.x, box.y, box.width, box.height).data;
+      const colours = new Set<number>();
+      for (let index = 0; index < pixels.length; index += 4) colours.add((pixels[index] << 16) | (pixels[index + 1] << 8) | pixels[index + 2]);
+      return colours.size;
+    });
+    return { types: item.types, width: bitmap.width, height: bitmap.height, corner: [...data.slice(0, 4)], dark, imageColours, expected };
+  });
+
+  await page.evaluate(() => window.harness.copyJson());
+  expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(await page.evaluate(() => window.harness.sampleJson));
+
+  await page.evaluate(() => window.harness.copyPng());
+  const sample = await readPng();
+  expect(sample.types).toEqual(['image/png']);
+  expect(sample.expected.scale).toBe(2);
+  expect({ width: sample.width, height: sample.height }).toEqual({ width: sample.expected.width, height: sample.expected.height });
+  expect(sample.corner).toEqual([0xf8, 0xf7, 0xf3, 255]);
+  expect(sample.dark).toBeGreaterThan(500);
+
+  // The demo's tea photographs are embedded images: they must draw, not taint or blank the canvas.
+  await page.evaluate(() => window.harness.demo());
+  await page.evaluate(() => window.harness.copyPng());
+  const demo = await readPng();
+  expect({ width: demo.width, height: demo.height }).toEqual({ width: demo.expected.width, height: demo.expected.height });
+  expect(demo.imageColours.length).toBeGreaterThan(3);
+  for (const colours of demo.imageColours) expect(colours).toBeGreaterThan(200);
+});
+
 test('plugin information displays bundled art and a responsive support bar offline', async ({ page, context }, info) => {
   await context.setOffline(true);
   await page.evaluate(() => window.harness.info());

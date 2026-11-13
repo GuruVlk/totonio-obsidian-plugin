@@ -8,7 +8,7 @@ import { interpolateView, VIEW_TWEEN_MS } from './viewTween';
 import { TagFilterMenu } from './tagFilter';
 import type { TagFilter } from './core/tags';
 
-type Options = { preview?: boolean; title?: string; open?: () => void; tagFilter?: TagFilter };
+type Options = { preview?: boolean; title?: string; open?: () => void; tagFilter?: TagFilter; contextMenu?: (event: MouseEvent) => void };
 type Icon = typeof ChevronLeft;
 
 export function showError(container: HTMLElement, error: unknown): void {
@@ -87,6 +87,13 @@ export class Viewer {
         this.update();
       });
     }
+    const { contextMenu } = options;
+    if (contextMenu) this.listen(this.surface, 'contextmenu', (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      this.hideNote();
+      contextMenu(event as MouseEvent);
+    });
     const Observer = dom.defaultView?.ResizeObserver;
     if (Observer) {
       const observer = new Observer(() => this.resize());

@@ -75,6 +75,7 @@ export function renderInfo(container: HTMLElement, version: string, heading: Inf
   element(page, 'p', 'Frame navigation uses the same 840 ms glide as Totonio: gently eased movement and geometric zoom. Use the wind-icon Glide between frames toggle for instant transitions. Reduce Motion in your system settings disables glide automatically. The toggle applies only to the current view and is not saved.');
   element(page, 'p', 'The spotlight-icon Dim the canvas around the active frame toggle turns the darkened surroundings off when you want the rest of the diagram in full view while presenting, and back on. Like Glide, it applies only to the current view.');
   element(page, 'p', 'Notes written on objects, lines and connectors in the web app appear as plain text when you hover over them with a mouse or pen; the empty area of a frame or group shows its own note. The sticky-note Show notes on hover toggle, shown only when the diagram has notes, turns this off and on for the current view. Notes hide when you move away, pan, zoom, change frames or press Escape, and are never drawn into the diagram. Touch screens do not show notes.');
+  element(page, 'p', 'Right-click a diagram, in its tab or a note preview, and choose Copy as JSON for the saved file text or Copy as PNG for a picture of the whole diagram, drawn like the web app\'s PNG export. Both ignore the current frame, zoom and tag filter, and nothing is written to your vault.');
 
   heading(page, 'Embed in a note');
   element(page, 'p', 'Add a totonio code block containing one vault-relative file path. Click its static preview to open the full presentation.');
@@ -83,7 +84,7 @@ export function renderInfo(container: HTMLElement, version: string, heading: Inf
 
   heading(page, 'Editing and compatibility');
   element(page, 'p', 'Use Open in Totonio in the viewer toolbar to open the website in your browser, then select your vault file there. The button does not send your diagram or its path. Save edits back to the same location; if your browser downloads a copy, replace the original manually. The Obsidian viewer refreshes when the source changes.');
-  element(page, 'p', 'Only format "totonio", version 3 is supported. Legacy versions 1/2 and .tatamio files are not migrated. Invalid files show an error in the pane. There are no editing tools, exports, telemetry, or background network requests.');
+  element(page, 'p', 'Only format "totonio", version 3 is supported. Legacy versions 1/2 and .tatamio files are not migrated. Invalid files show an error in the pane. There are no editing tools, file exports, telemetry, or background network requests.');
 
   const contact = element(page, 'section');
   element(contact, 'strong', 'Community and contact');

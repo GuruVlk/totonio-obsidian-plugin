@@ -2,6 +2,7 @@ import { FileView, MarkdownRenderChild, Plugin, TFile, normalizePath } from 'obs
 import type { App, WorkspaceLeaf } from 'obsidian';
 import { loadDocument } from './document';
 import { Viewer, showError } from './viewer';
+import { showDiagramMenu } from './menu';
 import { TotonioInfoTab } from './settings';
 import { DEMO_VIEW_TYPE, TotonioDemoView } from './demo';
 import type { TagFilter } from './core/tags';
@@ -36,7 +37,8 @@ export class TotonioView extends FileView {
       const json = await this.app.vault.read(file);
       if (generation !== this.generation) return;
       const document = loadDocument(json, file.path);
-      this.viewer = new Viewer(this.contentEl, document, { title: file.basename, tagFilter });
+      this.viewer = new Viewer(this.contentEl, document, { title: file.basename, tagFilter,
+        contextMenu: (event) => showDiagramMenu(event, json, document.shapes) });
     } catch (error) {
       if (generation === this.generation) showError(this.contentEl, error);
     }
@@ -91,8 +93,10 @@ export class TotonioEmbed extends MarkdownRenderChild {
       this.file = file;
       const json = await this.app.vault.read(file);
       if (generation !== this.generation) return;
-      this.viewer = new Viewer(this.containerEl, loadDocument(json, file.path), {
+      const document = loadDocument(json, file.path);
+      this.viewer = new Viewer(this.containerEl, document, {
         preview: true, title: file.basename,
+        contextMenu: (event) => showDiagramMenu(event, json, document.shapes),
         open: () => { void this.open(file).catch((error: unknown) => {
           if (generation === this.generation) showError(this.containerEl, error);
         }); },

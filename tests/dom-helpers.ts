@@ -9,4 +9,5 @@ if (typeof HTMLElement !== 'undefined') {
   };
   HTMLElement.prototype.createDiv = function (options) { return this.createEl('div', options); };
   HTMLElement.prototype.createSpan = function (options) { return this.createEl('span', options); };
+  window.createEl = ((tag: keyof HTMLElementTagNameMap) => document.createElement(tag)) as typeof createEl;
 }

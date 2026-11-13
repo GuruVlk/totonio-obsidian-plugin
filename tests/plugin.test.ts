@@ -21,11 +21,27 @@ const host = vi.hoisted(() => {
       this.extension = path.split('.').at(-1)!;
     }
   }
-  return { Component, TFile };
+  return { Component, TFile, menus: [] as Array<{ items: Array<{ title: string; icon: string; click: () => void }>; event: MouseEvent }>, notices: [] as string[] };
 });
 
 vi.mock('obsidian', () => ({
   TFile: host.TFile,
+  Menu: class {
+    items: Array<{ title: string; icon: string; click: () => void }> = [];
+    addItem(build: (item: object) => void) {
+      const entry = { title: '', icon: '', click: () => {} };
+      const item = {
+        setTitle(title: string) { entry.title = title; return item; },
+        setIcon(icon: string) { entry.icon = icon; return item; },
+        onClick(click: () => void) { entry.click = click; return item; },
+      };
+      build(item);
+      this.items.push(entry);
+      return this;
+    }
+    showAtMouseEvent(event: MouseEvent) { host.menus.push({ items: this.items, event }); }
+  },
+  Notice: class { constructor(message: string) { host.notices.push(message); } },
   normalizePath: (path: string) => path.replace(/\/+/g, '/'),
   PluginSettingTab: class {
     containerEl = document.createElement('div');
@@ -85,7 +101,65 @@ function createHost() {
   return { app, file: file as unknown as import('obsidian').TFile, vault, workspace, leaf, write, listeners };
 }
 
-beforeEach(() => { document.body.replaceChildren(); });
+beforeEach(() => { document.body.replaceChildren(); host.menus.length = 0; host.notices.length = 0; });
+
+describe('right-click copy menu', () => {
+  const rightClick = (root: HTMLElement) => {
+    const event = new MouseEvent('contextmenu', { bubbles: true, cancelable: true, button: 2 });
+    root.querySelector('.totonio-surface')!.dispatchEvent(event);
+    return event;
+  };
+  const settle = () => new Promise((resolve) => setTimeout(resolve, 0));
+
+  it('copies the saved file text as JSON from full views and previews without writing to the vault', async () => {
+    const { app, file, write } = createHost();
+    const writeText = vi.fn(async () => undefined);
+    vi.stubGlobal('navigator', { clipboard: { writeText } });
+    const view = new TotonioView({ app } as unknown as WorkspaceLeaf);
+    await view.onLoadFile(file);
+    const element = document.createElement('div');
+    const embed = new TotonioEmbed(element, app, 'diagrams/sample.totonio', 'note.md', async () => undefined);
+    embed.load();
+    await settle();
+    for (const root of [view.contentEl, element]) {
+      host.menus.length = 0;
+      expect(rightClick(root).defaultPrevented).toBe(true);
+      expect(host.menus).toHaveLength(1);
+      expect(host.menus[0].items.map(({ title, icon }) => ({ title, icon }))).toEqual([
+        { title: 'Copy as JSON', icon: 'braces' }, { title: 'Copy as PNG', icon: 'image' },
+      ]);
+      host.menus[0].items[0].click();
+      await settle();
+    }
+    expect(writeText).toHaveBeenCalledTimes(2);
+    expect(writeText).toHaveBeenNthCalledWith(1, sampleJson);
+    expect(writeText).toHaveBeenNthCalledWith(2, sampleJson);
+    expect(host.notices).toEqual(['Diagram JSON copied', 'Diagram JSON copied']);
+    expect(write).not.toHaveBeenCalled();
+    embed.unload();
+    vi.unstubAllGlobals();
+  });
+
+  it('reports a PNG copy the device cannot perform instead of failing silently', async () => {
+    const { app, file } = createHost();
+    vi.stubGlobal('navigator', { clipboard: { writeText: vi.fn() } });
+    const view = new TotonioView({ app } as unknown as WorkspaceLeaf);
+    await view.onLoadFile(file);
+    rightClick(view.contentEl);
+    host.menus[0].items[1].click();
+    await settle();
+    expect(host.notices).toEqual(['Could not copy the diagram: Copying images is unavailable on this device.']);
+    vi.unstubAllGlobals();
+  });
+
+  it('offers the menu in the bundled demo', async () => {
+    const { app } = createHost();
+    const view = new TotonioDemoView({ app } as unknown as WorkspaceLeaf);
+    await view.onOpen();
+    rightClick(view.contentEl);
+    expect(host.menus[0].items.map(({ title }) => title)).toEqual(['Copy as JSON', 'Copy as PNG']);
+  });
+});
 
 describe('read-only Obsidian integration', () => {
   it('retains and reconciles tag filters on reload but never across different files', async () => {

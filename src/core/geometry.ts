@@ -762,6 +762,8 @@ const simpleOrthogonalRoute = (shape: CanvasShape, shapes: CanvasShape[], start:
     }
     return simpleOrthogonalRoutePoints([start, ...(shape.routePoints ?? []), end], simpleRouteFirstAxis(shape, shapes, start, end));
 };
+export const routeDrawsAsPath = (shape: CanvasShape) => shape.routeStyle === 'curved' || shape.routeStyle === 'orthogonal'
+    || shape.routeStyle === 'simple-orthogonal' || Boolean(shape.routePoints?.length);
 const connectorRouteCache = new WeakMap<CanvasShape[], WeakMap<CanvasShape, Point[]>>();
 export const connectorPathPoints = (shape: CanvasShape, shapes: CanvasShape[], ancestors = new Set<string>()): Point[] => {
     if (ancestors.size > 0)

@@ -179,6 +179,29 @@ it('keeps static previews and frameless documents free of animation controls', (
   expect(scene().getAttribute('transform')).toBe(targetTransform(fitBounds(contentBounds(state.shapes)!, { width, height: 560 })));
 });
 
+it('hands a right-click on the diagram to the copy menu in full views and previews, without opening the preview', () => {
+  for (const preview of [false, true]) {
+    viewer.dispose();
+    const open = vi.fn();
+    const contextMenu = vi.fn();
+    const outer = vi.fn();
+    document.body.addEventListener('contextmenu', outer);
+    viewer = new Viewer(document.body, loadDocument(sampleJson, 'sample.totonio'), { preview, open, contextMenu });
+    const event = new MouseEvent('contextmenu', { bubbles: true, cancelable: true, button: 2 });
+    viewer.root.querySelector('.totonio-surface')!.dispatchEvent(event);
+    expect(contextMenu).toHaveBeenCalledWith(event);
+    expect(event.defaultPrevented).toBe(true);
+    expect(outer).not.toHaveBeenCalled();
+    expect(open).not.toHaveBeenCalled();
+    document.body.removeEventListener('contextmenu', outer);
+  }
+  viewer.dispose();
+  viewer = new Viewer(document.body, loadDocument(sampleJson, 'sample.totonio'), { preview: true });
+  const event = new MouseEvent('contextmenu', { bubbles: true, cancelable: true });
+  viewer.root.querySelector('.totonio-surface')!.dispatchEvent(event);
+  expect(event.defaultPrevented).toBe(false);
+});
+
 it('fits frameless content once, preserves manual navigation on resize, and resets to saved view', () => {
   viewer.dispose();
   const state = loadDocument(sampleJson, 'sample.totonio');

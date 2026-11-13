@@ -1,20 +1,19 @@
-# Totonio Presentation 0.1.17
+# Totonio Presentation 0.1.18
 
 Architecture and sequence diagrams alongside your notes. Create in Totonio, present in Obsidian.
 
-## Object Notes on Hover
+## Copy a Diagram from the Right-click Menu
 
-- Notes written in the Totonio web app on an object, Line or Connector now appear when you hover over it with a mouse or pen. The note shows as plain text beside the pointer, keeping its line breaks.
-- Hovering the empty area of a Presentation Frame or group shows that frame's or group's note. Objects without a note show nothing.
-- The sticky-note **Show notes on hover** toolbar button turns hover notes off and on for the current view. It is on when a file opens and appears only when the diagram has notes.
-- A note hides when the pointer leaves, when you pan, zoom or change frames, and on Escape. It is never drawn into the diagram, and Markdown previews do not show notes. Touch screens keep their usual tap and pan behaviour and do not show notes.
-- Diagram files with notes now open with their notes read; a note that is not text makes the file report as malformed, as in the web app. Your diagram files do not change.
+- Right-click a diagram, in its tab or in a Markdown preview, to choose **Copy as JSON** or **Copy as PNG**. On touch screens that open the context menu with a long press, the same menu appears.
+- **Copy as JSON** copies the saved `.totonio` file text exactly, ready to paste into Totonio's Import > JSON from clipboard or anywhere else.
+- **Copy as PNG** copies a picture of the whole diagram on Totonio's canvas colour, drawn the same way as the web app's PNG export: at twice the size, with embedded images and icons, and without Presentation Frame outlines. Very large diagrams are scaled down to stay within device limits.
+- Both always copy the whole diagram, whatever frame, zoom or tag filter you are looking at. A notice confirms the copy or explains why it failed. Nothing is written to your vault, and nothing leaves your device.
 
 The release workflow runs lint, unit/integration tests, browser tests, and build verification before publishing the three installation files with GitHub provenance attestations.
 
 ## Update
 
-In Obsidian, open Settings > Community plugins, check for updates, and update Totonio Presentation to 0.1.17 when available. The plugin does not install or update itself. The Community directory may need time to detect and review this release.
+In Obsidian, open Settings > Community plugins, check for updates, and update Totonio Presentation to 0.1.18 when available. The plugin does not install or update itself. The Community directory may need time to detect and review this release.
 
 ## Included
 
@@ -23,6 +22,7 @@ In Obsidian, open Settings > Community plugins, check for updates, and update To
 - Ordered Presentation Frames with keyboard/button navigation, pane fitting, and dimmed surroundings.
 - Free-view pan/zoom, saved viewport restoration, Reset view, and Fit content.
 - Object notes shown as plain text on mouse or pen hover, with a per-view toggle.
+- A right-click menu that copies the whole diagram as its saved JSON or as a PNG picture.
 - Static Markdown previews that open the full presentation viewer.
 - Illustrated plugin information, author credit, and optional support link.
 - Open in Totonio opens the web app in your browser without transferring the file or its path.
